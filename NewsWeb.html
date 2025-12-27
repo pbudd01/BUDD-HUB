@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUDD-HUB | Premium News Portal</title>
+    <link rel="stylesheet" href="NewsWeb.css">
+</head>
+<body data-theme="light">
+
+    <div class="ticker-wrap">
+        <div class="ticker-label">BREAKING</div>
+        <div class="ticker-content" id="ticker-scroll"></div>
+        <div class="ticker-fade-right"></div>
+    </div>
+
+    <header>
+        <div class="brand-section">
+            <h1 class="main-logo">BUDD-HUB</h1>
+            <button id="theme-toggle" class="absolute-top-right">🌙</button>
+        </div>
+
+        <div class="action-bar">
+            <div class="search-container">
+                <div class="search-inner-wrapper">
+                    <input type="text" id="main-search" placeholder="Search news..." class="search-bar" oninput="handleSearch()">
+                    <button class="inner-search-btn" onclick="handleSearch()">Search</button>
+                </div>
+                <button class="icon-btn" onclick="toggleFilterUI()">📅</button>
+                <button class="icon-btn" onclick="saveCurrentSearch()">📌</button>
+            </div>
+        </div>
+
+        <div id="pinned-searches" class="pinned-container"></div>
+
+        <div id="date-filter-row" class="filter-row" style="display: none;">
+            <div class="filter-group"><label>From:</label><input type="date" id="filter-date-from" onchange="handleSearch()"></div>
+            <div class="filter-group"><label>To:</label><input type="date" id="filter-date-to" onchange="handleSearch()"></div>
+            <button class="clear-filter-btn" onclick="clearFilters()">Reset</button>
+        </div>
+
+        <nav class="category-bar">
+            <ul class="nav-links">
+                <li><a href="#" class="nav-item" data-category="all">All News</a></li>
+                <li><a href="#" class="nav-item" data-category="local">Local</a></li>
+                <li><a href="#" class="nav-item" data-category="tech">Tech</a></li>
+                <li><a href="#" class="nav-item" data-category="finance">Finance</a></li>
+                <li><a href="#" class="nav-item" data-category="international">International</a></li>
+                <li><a href="#" class="nav-item" data-category="sports">Sports</a></li>
+                <li><a href="#" class="nav-item" data-category="fashion">Fashion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content-wrapper" id="news-feed"></main>
+
+    <div id="admin-panel" class="admin-overlay">
+        <div class="admin-content premium-glass">
+            <div class="admin-header-main">
+                <div class="admin-brand"><span class="hub-tag">PRO</span><h2>Admin Dashboard</h2></div>
+                <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
+            </div>
+            
+            <div id="login-section">
+                <input type="password" id="admin-pass" placeholder="Security Key">
+                <button class="budd-read-more" onclick="verifyAdmin()">Authenticate</button>
+            </div>
+
+            <div id="admin-dashboard" style="display:none;">
+                <div id="admin-stats" class="stats-grid"></div>
+                <div class="admin-tabs">
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">✍️ Post</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">📂 Database</button>
+                    <button id="btn-tab-ad" class="tab-btn" onclick="showTab('ad')">💰 Sponsor</button>
+                </div>
+                <div id="tab-create" class="admin-scroll-area">
+                    <input type="hidden" id="edit-index">
+                    <select id="post-category">
+                        <option value="local">Local</option><option value="tech">Tech</option>
+                        <option value="finance">Finance</option><option value="international">International</option>
+                        <option value="sports">Sports</option><option value="fashion">Fashion</option>
+                    </select>
+                    <input type="text" id="post-title" placeholder="Headline">
+                    <input type="text" id="post-image" placeholder="Image URL">
+                    <textarea id="post-summary" placeholder="Hook/Summary"></textarea>
+                    <textarea id="post-full" style="height:120px;" placeholder="Full Story"></textarea>
+                    <button class="submit-action-btn" onclick="submitPost()">Publish</button>
+                </div>
+                <div id="tab-manage" class="admin-scroll-area" style="display:none;">
+                    <div class="admin-backup-controls">
+                        <button class="backup-btn" onclick="exportData()">📥 Backup</button>
+                        <button class="backup-btn" onclick="triggerImport()">📤 Restore</button>
+                        <input type="file" id="import-file" style="display:none;" onchange="importData(event)">
+                    </div>
+                    <div id="manage-list"></div>
+                </div>
+                <div id="tab-ad" class="admin-scroll-area" style="display:none;">
+                    <input type="text" id="ad-title-input" placeholder="Partner Name">
+                    <textarea id="ad-desc-input" placeholder="Ad Text"></textarea>
+                    <input type="text" id="ad-link-input" placeholder="Link (mailto:...)">
+                    <button class="submit-action-btn" onclick="saveSponsorship()">Update Sponsor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
+
+    <footer class="ad-footer">
+        <div class="premium-ad-container">
+            <p class="ad-label">Partner Spotlight</p>
+            <div class="ad-box">
+                <h3 class="ad-title">Advertise with BUDD-HUB</h3>
+                <p>Reach our premium audience.</p>
+                <a href="mailto:ebenezerewemoje@gmail.com" id="footer-ad-link" class="ad-cta">Enquire Now &rarr;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="NewsWeb.js"></script>
+</body>
+</html>

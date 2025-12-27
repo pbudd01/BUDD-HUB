@@ -78,9 +78,9 @@ function renderManageList() {
     document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
         <div style="display:flex; align-items:center; background:#f8f8f8; padding:8px; margin-bottom:5px; border-radius:8px;">
             <img src="${s.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px; margin-right:10px;">
-            <span style="flex:1; font-size:0.75rem;">${s.title.slice(0,20)}...</span>
-            <button onclick="editPost(${i})" style="color:blue; border:none; background:none; cursor:pointer;">Edit</button>
-            <button onclick="deletePost(${i})" style="color:red; border:none; background:none; cursor:pointer; margin-left:5px;">Del</button>
+            <span style="flex:1; font-size:0.75rem; font-weight:bold;">${s.title.slice(0,25)}...</span>
+            <button onclick="editPost(${i})" style="color:blue; border:none; background:none; cursor:pointer; font-size:0.7rem;">Edit</button>
+            <button onclick="deletePost(${i})" style="color:red; border:none; background:none; cursor:pointer; font-size:0.7rem; margin-left:5px;">Del</button>
         </div>`).join('');
 }
 
@@ -89,11 +89,44 @@ function editPost(i) {
     document.getElementById('post-title').value = s.title; document.getElementById('post-summary').value = s.summary; document.getElementById('post-full').value = s.fullText; document.getElementById('post-image').value = s.image; showTab('create');
 }
 
-function deletePost(i) { if(confirm("Delete story?")) { const s = newsData.all[i]; newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date); refreshData(); renderManageList(); handleSearch(); } }
+function deletePost(i) {
+    if (confirm("Delete this story?")) {
+        const story = newsData.all[i];
+        newsData[story.category] = newsData[story.category].filter(s => s.date !== story.date);
+        refreshData(); renderManageList(); handleSearch();
+    }
+}
 
 function applySponsorship() { document.querySelector('.ad-title').textContent = sponsorship.title; document.querySelector('.ad-box p').textContent = sponsorship.desc; document.getElementById('footer-ad-link').href = sponsorship.link; document.getElementById('ad-title-input').value = sponsorship.title; document.getElementById('ad-desc-input').value = sponsorship.desc; document.getElementById('ad-link-input').value = sponsorship.link; }
 function saveSponsorship() { sponsorship = { title: document.getElementById('ad-title-input').value, desc: document.getElementById('ad-desc-input').value, link: document.getElementById('ad-link-input').value || "mailto:ebenezerewemoje@gmail.com" }; localStorage.setItem('budd_ad', JSON.stringify(sponsorship)); applySponsorship(); alert("Saved!"); }
-function updateAdminStats() { const total = newsData.all.length; const top = Object.keys(newsData).filter(k => k !== 'all').reduce((a, b) => newsData[a].length > newsData[b].length ? a : b); document.getElementById('admin-stats').innerHTML = `<div class="stat-card"><span>Posts</span><b>${total}</b></div><div class="stat-card"><span>Top</span><b>${top.toUpperCase()}</b></div><div class="stat-card"><span>Pins</span><b>${pinnedSearches.length}</b></div>`; }
+function updateAdminStats() { const total = newsData.all.length; const top = total ? Object.keys(newsData).filter(k => k !== 'all').reduce((a, b) => newsData[a].length > newsData[b].length ? a : b) : "N/A"; document.getElementById('admin-stats').innerHTML = `<div class="stat-card"><span>Posts</span><b>${total}</b></div><div class="stat-card"><span>Top</span><b>${top.toUpperCase()}</b></div><div class="stat-card"><span>Pins</span><b>${pinnedSearches.length}</b></div>`; }
+
+function exportData() {
+    const dataStr = JSON.stringify({ news: newsData, pins: pinnedSearches, ad: sponsorship }, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `BUDD-HUB-Backup-${new Date().toLocaleDateString()}.json`;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+}
+
+function triggerImport() { document.getElementById('import-file').click(); }
+function importData(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (confirm("Restore from backup? This will overwrite your current feed.")) {
+                newsData = imported.news; pinnedSearches = imported.pins; sponsorship = imported.ad;
+                localStorage.setItem('budd_news', JSON.stringify(newsData)); localStorage.setItem('budd_pins', JSON.stringify(pinnedSearches)); localStorage.setItem('budd_ad', JSON.stringify(sponsorship));
+                location.reload();
+            }
+        } catch (err) { alert("Invalid File."); }
+    };
+    reader.readAsText(file);
+}
+
 function saveCurrentSearch() { const val = document.getElementById('main-search').value.trim(); if (val && !pinnedSearches.includes(val)) { pinnedSearches.push(val); localStorage.setItem('budd_pins', JSON.stringify(pinnedSearches)); renderPins(); } }
 function renderPins() { document.getElementById('pinned-searches').innerHTML = pinnedSearches.map((p, i) => `<div style="background:#000; color:#fff; padding:4px 10px; border-radius:15px; font-size:0.7rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-right:5px; margin-bottom:5px;" onclick="applyPin('${p}')">${p} <span onclick="event.stopPropagation(); removePin(${i})" style="color:orange;">×</span></div>`).join(''); }
 function applyPin(p) { document.getElementById('main-search').value = p; handleSearch(); }
