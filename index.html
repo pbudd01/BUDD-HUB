@@ -19,24 +19,16 @@
             <h3>PBUDD-HUB</h3>
             <span class="close-drawer" onclick="toggleMenu()">&times;</span>
         </div>
-        <nav class="drawer-nav">
-            <a href="#" class="drawer-item" data-category="all" onclick="selectCategory('all')">All News</a>
-            <a href="#" class="drawer-item" data-category="local" onclick="selectCategory('local')">Local</a>
-            <a href="#" class="drawer-item" data-category="tech" onclick="selectCategory('tech')">Tech</a>
-            <a href="#" class="drawer-item" data-category="finance" onclick="selectCategory('finance')">Finance</a>
-            <a href="#" class="drawer-item" data-category="international" onclick="selectCategory('international')">International</a>
-            <a href="#" class="drawer-item" data-category="sports" onclick="selectCategory('sports')">Sports</a>
-            <a href="#" class="drawer-item" data-category="fashion" onclick="selectCategory('fashion')">Fashion</a>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.1);">
-            <button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>
-        </nav>
+        <nav class="drawer-nav" id="drawer-nav-list">
+            </nav>
     </div>
 
     <header class="glass-header">
         <div class="brand-section">
             <button class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
             <h1 class="main-logo">PBUDD-HUB</h1>
-            <div style="width: 30px;"></div> </div>
+            <div style="width: 30px;"></div> 
+        </div>
 
         <div class="action-bar">
             <div class="search-layout-wrapper">
@@ -44,26 +36,68 @@
                     <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
                     <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
                 </div>
-                <button class="icon-btn-circle" onclick="toggleFilterUI()"><i class="fas fa-calendar-alt"></i></button>
             </div>
         </div>
 
-        <div id="date-filter-row" class="filter-row" style="display: none;">
-            <div class="filter-group">
-                <label>From:</label><input type="date" id="filter-date-from" onchange="handleSearch()">
-                <label>To:</label><input type="date" id="filter-date-to" onchange="handleSearch()">
-            </div>
-            <button class="clear-filter-btn" onclick="clearFilters()">Reset</button>
-        </div>
+        <nav class="category-bar-horizontal">
+            <div class="nav-scroll-container" id="horizontal-nav">
+                </div>
+        </nav>
     </header>
 
     <main class="content-wrapper" id="news-feed"></main>
 
+    <div id="admin-panel" class="admin-overlay">
+        <div class="admin-content site-theme-dashboard">
+            <div class="admin-header-main">
+                <div class="admin-brand"><span class="hub-tag">PRO</span><h2>PBUDD-HUB CMS</h2></div>
+                <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
+            </div>
+            
+            <div id="login-section" class="login-shield">
+                <p>Security Required</p>
+                <input type="password" id="admin-pass" placeholder="Enter Security Key" class="site-input">
+                <button class="budd-read-more" onclick="verifyAdmin()">Unlock</button>
+            </div>
+
+            <div id="admin-dashboard" style="display:none;">
+                <div class="admin-tabs">
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">✍️ Compose</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">📂 Database</button>
+                </div>
+
+                <div id="tab-create" class="admin-scroll-area">
+                    <input type="hidden" id="edit-index">
+                    <select id="post-category" class="site-input">
+                        <option value="local">Local</option><option value="tech">Tech</option>
+                        <option value="finance">Finance</option><option value="international">International</option>
+                        <option value="sports">Sports</option><option value="fashion">Fashion</option>
+                    </select>
+                    <input type="text" id="post-title" class="site-input" placeholder="Main Headline">
+                    <input type="text" id="post-image" class="site-input" placeholder="Image URL">
+                    <textarea id="post-summary" class="site-input" placeholder="News Hook/Summary"></textarea>
+                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story Content"></textarea>
+                    <button id="publish-btn" class="publish-action-btn" onclick="submitPost()">Publish to Hub</button>
+                </div>
+
+                <div id="tab-manage" class="admin-scroll-area" style="display:none;">
+                    <div class="admin-backup-controls">
+                        <button class="backup-btn" onclick="exportData()">📥 Backup</button>
+                        <button class="backup-btn" onclick="triggerImport()">📤 Restore</button>
+                        <input type="file" id="import-file" style="display:none;" onchange="importData(event)">
+                    </div>
+                    <div id="manage-list" class="db-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="site-footer">
+        <div class="footer-top-line"></div>
         <div class="footer-grid">
             <div class="footer-section">
-                <h4>About PBUDD-HUB</h4>
-                <p>Your premier destination for verified high-impact journalism, financial clarity, and tech updates.</p>
+                <h2 class="footer-logo">PBUDD-HUB</h2>
+                <p>Delivering high-fidelity journalism and verified news updates across the globe. Your premium lens into tech, finance, and culture.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -72,18 +106,19 @@
             </div>
 
             <div class="footer-section">
-                <h4>Contact Editorial</h4>
-                <form id="contact-form" class="footer-contact-form">
+                <h4>Editorial Enquiries</h4>
+                <form id="contact-form" class="premium-form">
                     <input type="text" id="contact-subject" placeholder="Subject" required>
-                    <textarea id="contact-message" placeholder="Message content..." required></textarea>
-                    <button type="submit" class="contact-send-btn">Send Email</button>
+                    <textarea id="contact-message" placeholder="Message..." required></textarea>
+                    <button type="submit">Submit Inquiry</button>
                 </form>
             </div>
             
-            <div class="footer-section">
-                <h4>Official Channel</h4>
-                <a href="mailto:ebenezerewemoje@gmail.com" class="footer-link">ebenezerewemoje@gmail.com</a>
-                <p style="margin-top: 20px;">&copy; 2025 PBUDD-HUB Network.</p>
+            <div class="footer-section contact-info">
+                <h4>Contact Info</h4>
+                <a href="mailto:ebenezerewemoje@gmail.com"><i class="fas fa-envelope"></i> ebenezerewemoje@gmail.com</a>
+                <p><i class="fas fa-shield-alt"></i> Verified Content Provider</p>
+                <p class="copyright">&copy; 2025 PBUDD-HUB. All rights reserved.</p>
             </div>
         </div>
     </footer>
