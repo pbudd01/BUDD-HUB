@@ -10,7 +10,7 @@ body { background: var(--white); color: var(--black); transition: 0.3s; }
 .ticker-item { color: #fff; padding-right: 100px; font-size: 13px; font-weight: bold; flex-shrink: 0; }
 @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* SOLID ORANGE HEADER */
+/* SOLID ORANGE HEADER SECTION */
 .glass-header { background: var(--orange) !important; border-bottom: 3px solid #000; position: sticky; top: 0; z-index: 2000; }
 .brand-section { background: var(--orange); padding: 15px 5%; display: flex; justify-content: center; align-items: center; position: relative; }
 .main-logo { font-size: 2rem; font-weight: 950; text-transform: uppercase; color: #000; }
@@ -18,42 +18,38 @@ body { background: var(--white); color: var(--black); transition: 0.3s; }
 .action-bar { background: var(--orange); padding: 10px 5%; }
 .search-pill { display: flex; background: #fff; border: 3px solid #000; border-radius: 50px; overflow: hidden; margin: 0 auto; max-width: 600px; }
 .search-input { flex: 1; border: none; padding: 10px 20px; outline: none; font-weight: 600; }
-.search-submit-btn { background: #000; color: var(--orange); border: none; width: 60px; cursor: pointer; }
+.search-submit-btn { background: #000; color: var(--orange); border: none; width: 60px; cursor: pointer; font-size: 1.1rem; }
 
-/* HORIZONTAL CATEGORY BAR (Desktop/Header) */
+/* HORIZONTAL CATEGORY BAR */
 .category-bar-horizontal { background: var(--orange); border-top: 1px solid rgba(0,0,0,0.1); width: 100%; display: flex; justify-content: center; }
 .nav-scroll-container { display: flex; flex-direction: row; overflow-x: auto; white-space: nowrap; padding: 0 15px; scrollbar-width: none; }
 .nav-scroll-container::-webkit-scrollbar { display: none; }
 .nav-item { padding: 12px 25px; text-decoration: none; color: #000; font-size: 12px; font-weight: 800; border-bottom: 3px solid transparent; }
 .nav-item.active-page { border-bottom: 3px solid #000; }
 
-/* VERTICAL SIDE MENU (Drawer) */
+/* THEME SENSITIVE VERTICAL SIDE MENU */
 .side-drawer { position: fixed; top: 0; left: -285px; width: 280px; height: 100%; background: var(--white); color: var(--black); border-right: 3px solid #000; z-index: 5000; transition: 0.4s; padding: 25px; }
 .side-drawer.open { left: 0; box-shadow: 15px 0 50px rgba(0,0,0,0.4); }
-.drawer-item { 
-    display: block; /* Forces vertical stacking */
-    padding: 18px 0; 
-    color: var(--black); 
-    text-decoration: none; 
-    font-weight: 900; 
-    border-bottom: 1px solid rgba(128,128,128,0.2); 
-    text-transform: uppercase;
-}
-.drawer-theme-btn { width: 100%; padding: 12px; margin-top: 20px; background: var(--black); color: var(--orange); border: none; border-radius: 8px; font-weight: 900; cursor: pointer; }
+.drawer-item { display: block; padding: 18px 0; color: var(--black); text-decoration: none; font-weight: 900; border-bottom: 1px solid rgba(128,128,128,0.2); text-transform: uppercase; }
+.drawer-theme-btn { width: 100%; padding: 14px; margin-top: 30px; background: var(--black); color: var(--orange); border: none; border-radius: 8px; font-weight: 900; cursor: pointer; }
+
+/* PREMIUM THEME BUTTONS */
+.share-btn { background: #000; color: var(--orange); border: 2px solid #000; padding: 6px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+.share-btn:hover { background: var(--orange); color: #000; }
+.budd-read-more { background: var(--orange); color: #000; border: 3px solid #000; padding: 12px 28px; border-radius: 50px; font-weight: 950; font-size: 0.8rem; cursor: pointer; transition: 0.2s; margin-top: 15px; }
+.budd-read-more:hover { background: #000; color: var(--orange); }
+
+/* ADMIN DASHBOARD - THEME ALIGNED */
+.admin-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 6000; }
+.site-theme-dashboard { background: var(--white); color: var(--black); width: 90%; max-width: 450px; margin: 5% auto; padding: 30px; border-radius: 15px; border: 4px solid #000; box-shadow: 10px 10px 0px var(--orange); }
+.site-input { width: 100%; background: var(--white); border: 2px solid #000; padding: 12px; margin-bottom: 15px; border-radius: 8px; color: var(--black); font-weight: 600; }
+.publish-action-btn { background: #000; color: var(--orange); border: none; padding: 15px; width: 100%; font-weight: 900; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+.publish-action-btn:hover { background: var(--orange); color: #000; }
 
 /* FEED & FOOTER */
 .content-wrapper { padding: 30px 5%; max-width: 800px; margin: 0 auto; }
 .text-container { max-height: 0; overflow: hidden; opacity: 0; transition: 0.5s; }
 .show-text { max-height: 3000px; opacity: 1; }
-.dynamic-img { width: 100%; border-radius: 12px; margin: 15px 0; border: 2px solid #000; }
+.dynamic-img { width: 100%; border-radius: 12px; margin: 15px 0; border: 3px solid #000; }
 .site-footer { background: #0b0b0b; color: #fff; padding: 60px 8%; border-top: 5px solid var(--orange); margin-top: 50px; }
-.social-icons i { font-size: 1.5rem; margin-right: 20px; color: #fff; }
-.premium-form input, .premium-form textarea { width: 100%; background: #222; border: none; padding: 12px; margin-bottom: 10px; color: #fff; border-radius: 5px; }
-.premium-form button { background: var(--orange); color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; }
-
-/* CMS DASHBOARD */
-.admin-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 6000; }
-.site-theme-dashboard { background: var(--white); width: 90%; max-width: 400px; margin: 5% auto; padding: 20px; border-radius: 10px; border: 3px solid #000; color: var(--black); }
-.site-input { width: 100%; background: var(--white); border: 2px solid #000; padding: 10px; margin-bottom: 10px; border-radius: 5px; color: var(--black); }
-.publish-action-btn { background: #000; color: var(--orange); border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; }
 #admin-trigger { position: fixed; bottom: 20px; right: 20px; opacity: 0.1; background: none; border: none; font-size: 24px; cursor: pointer; }
