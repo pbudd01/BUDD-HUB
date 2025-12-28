@@ -1,40 +1,58 @@
 const ADMIN_PASSWORD = "budd-hub-2025";
-let newsData = { local:[], tech:[], finance:[], international:[], sports:[], fashion:[], all:[] };
-let currentCategory = 'all';
-let filterEnabled = false; // The gatekeeper for date filtering
 
+// Unified data structure: initialized empty, then filled by GitHub or LocalStorage
+let newsData = { 
+    local: [], tech: [], finance: [], international: [], 
+    sports: [], fashion: [], all: [] 
+};
+
+let sponsorship = { 
+    title: "Advertise on PBUDD-HUB", 
+    desc: "Reach a premium audience.", 
+    link: "mailto:ebenezerewemoje@gmail.com" 
+};
+
+let currentCategory = 'all';
+let filterEnabled = false; // Gatekeeper: Date filter only works when UI is open
+
+// Single entry point for the application
 window.onload = () => {
     loadSharedNews();
 };
 
 /**
- * FETCH LOGIC: Attempts to pull the global news file from GitHub.
- * If it fails, it falls back to the device's local storage.
+ * FETCH LOGIC: Pulls the global news file from GitHub.
+ * This is what allows everyone to see the same stories.
  */
 async function loadSharedNews() {
     try {
-        // REPLACE 'pbudd01' and 'YOUR_REPO' with your actual GitHub details
-        const response = await fetch('https://raw.githubusercontent.com/pbudd01/YOUR_REPO/main/BUDD-HUB-Backup.json');
+        // Fetches from your specific GitHub repository
+        const response = await fetch('https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json');
         if (response.ok) {
             const shared = await response.json();
             newsData = shared.news;
+            if (shared.ad) sponsorship = shared.ad;
         } else {
+            // If GitHub file isn't found, load from this device's memory
             newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
         }
     } catch (e) {
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
     }
     refreshData();
+    applySponsorship();
     handleSearch();
 }
 
+/**
+ * REFRESH: Rebuilds the 'all' category from individual sections and saves locally
+ */
 function refreshData() {
     const cats = ['local', 'tech', 'finance', 'international', 'sports', 'fashion'];
     let combined = [];
     cats.forEach(cat => { 
         if (Array.isArray(newsData[cat])) combined = combined.concat(newsData[cat]); 
     });
-    // Rebuild the "All News" list and sort by date
     newsData.all = combined.sort((a, b) => new Date(b.date) - new Date(a.date));
     localStorage.setItem('budd_news', JSON.stringify(newsData));
     updateTicker();
@@ -49,8 +67,7 @@ function updateTicker() {
 }
 
 /**
- * UI TOGGLE: Opens the date filter row.
- * Sets 'filterEnabled' to true so handleSearch() knows to use date inputs.
+ * UI TOGGLE: Opens/Closes the date filter row
  */
 function toggleFilterUI() {
     const r = document.getElementById('date-filter-row');
@@ -60,17 +77,20 @@ function toggleFilterUI() {
     } else {
         r.style.display = 'none';
         filterEnabled = false;
-        clearFilters(); // Reset the dates when closing
+        clearFilters(); 
     }
 }
 
+/**
+ * SEARCH & FILTER: Handles text queries and date constraints
+ */
 function handleSearch() {
     const q = document.getElementById('main-search').value.toLowerCase();
     const from = document.getElementById('filter-date-from').value;
     const to = document.getElementById('filter-date-to').value;
     let filtered = (currentCategory === 'all') ? [...newsData.all] : [...newsData[currentCategory]];
     
-    // DATE GATE: Only filters if the Calendar UI is open
+    // Date Lock: Only filters if the UI is actually open
     if (filterEnabled) {
         if (from) filtered = filtered.filter(s => new Date(s.date) >= new Date(from));
         if (to) { 
@@ -106,7 +126,7 @@ function renderFeed(stories) {
 }
 
 /**
- * PUBLISH LOGIC: Includes the Success Animation and Auto-Reset of fields.
+ * PUBLISH: Adds new content, triggers success animation, and resets the form
  */
 function submitPost() {
     const btn = document.getElementById('publish-btn');
@@ -130,11 +150,11 @@ function submitPost() {
     }
     newsData[cat].unshift(post);
     
-    // Success Animation
+    // UI Feedback
     btn.classList.add('success');
     
     setTimeout(() => {
-        // Clear Form Fields
+        // Reset fields
         document.getElementById('edit-index').value = "";
         document.getElementById('post-title').value = "";
         document.getElementById('post-image').value = "";
@@ -148,6 +168,9 @@ function submitPost() {
     }, 1200);
 }
 
+/**
+ * DELETE: Permanently erases the story from the specific category and rebuilds the feed
+ */
 function deletePost(i) {
     if (confirm("ERASE PERMANENTLY? This removes all traces of the story.")) {
         const s = newsData.all[i];
@@ -158,17 +181,18 @@ function deletePost(i) {
     }
 }
 
-// --- ADMINISTRATIVE & UI UTILITIES ---
+// --- UTILITIES ---
 
 function verifyAdmin() { 
     if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { 
         document.getElementById('login-section').style.display = 'none'; 
         document.getElementById('admin-dashboard').style.display = 'block'; 
+        updateAdminStats();
     } else alert("Access Denied."); 
 }
 
 function showTab(t) { 
-    ['create', 'manage'].forEach(tab => {
+    ['create', 'manage', 'ad'].forEach(tab => {
         document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none';
         document.getElementById(`btn-tab-${tab}`).classList.toggle('active', t === tab);
     }); 
@@ -179,8 +203,44 @@ function renderManageList() {
     document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
         <div style="display:flex; padding:8px; border-bottom:1px solid #ddd; font-size:11px; align-items:center;">
             <span style="flex:1;">${s.title.slice(0,30)}...</span>
+            <button onclick="editPost(${i})" style="color:blue; background:none; border:none; cursor:pointer; margin-right:10px;">EDIT</button>
             <button onclick="deletePost(${i})" style="color:red; background:none; border:none; cursor:pointer;">DELETE</button>
         </div>`).join('');
+}
+
+function editPost(i) {
+    const s = newsData.all[i];
+    document.getElementById('edit-index').value = i;
+    document.getElementById('post-category').value = s.category;
+    document.getElementById('post-title').value = s.title;
+    document.getElementById('post-image').value = s.image;
+    document.getElementById('post-summary').value = s.summary;
+    document.getElementById('post-full').value = s.fullText;
+    showTab('create');
+}
+
+function applySponsorship() {
+    const titleEl = document.querySelector('.ad-title');
+    const descEl = document.querySelector('.ad-box p');
+    if (titleEl) titleEl.textContent = sponsorship.title;
+    if (descEl) descEl.textContent = sponsorship.desc;
+}
+
+function saveSponsorship() {
+    sponsorship = { 
+        title: document.getElementById('ad-title-input').value, 
+        desc: document.getElementById('ad-desc-input').value, 
+        link: "mailto:ebenezerewemoje@gmail.com" 
+    };
+    localStorage.setItem('budd_ad', JSON.stringify(sponsorship));
+    applySponsorship();
+    alert("Sponsorship Saved!");
+}
+
+function updateAdminStats() {
+    const total = newsData.all.length;
+    const statsEl = document.getElementById('admin-stats');
+    if (statsEl) statsEl.innerHTML = `<div class="stat-card"><span>Total Posts</span><b>${total}</b></div>`;
 }
 
 function handleAction(cat, idx) {
@@ -214,17 +274,37 @@ function closeAdminPanel() {
     document.getElementById('admin-panel').style.display = 'none'; 
     document.getElementById('login-section').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
+    document.getElementById('admin-pass').value = '';
 }
 
 function exportData() { 
-    const d = JSON.stringify({ news: newsData }, null, 2); 
+    const d = JSON.stringify({ news: newsData, ad: sponsorship }, null, 2); 
     const b = new Blob([d], { type: "application/json" }); 
     const u = URL.createObjectURL(b); 
     const l = document.createElement('a'); 
-    l.href = u; l.download = `PBUDD-HUB-Backup.json`; 
+    l.href = u; l.download = `BUDD-HUB-Backup.json`; 
     document.body.appendChild(l); l.click(); document.body.removeChild(l); 
 }
 
+function triggerImport() { document.getElementById('import-file').click(); }
+
+function importData(e) { 
+    const f = e.target.files[0]; if (!f) return; 
+    const r = new FileReader(); 
+    r.onload = function(ev) { 
+        try { 
+            const i = JSON.parse(ev.target.result); 
+            if (confirm("Restore from backup?")) { 
+                newsData = i.news; sponsorship = i.ad; 
+                localStorage.setItem('budd_news', JSON.stringify(newsData)); 
+                location.reload(); 
+            } 
+        } catch (er) { alert("Error reading file."); } 
+    }; 
+    r.readAsText(f); 
+}
+
+// Event Listeners for Categories
 document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', e => {
     e.preventDefault();
     currentCategory = l.dataset.category;
@@ -232,25 +312,10 @@ document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', 
     handleSearch();
 }));
 
+// Theme Toggle
 document.getElementById('theme-toggle').addEventListener('click', () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
 });
-async function loadSharedNews() {
-    try {
-        // Updated with your GitHub username (pbudd01) and repository name (BUDD-HUB)
-        const response = await fetch('https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json');
-        if (response.ok) {
-            const sharedData = await response.json();
-            newsData = sharedData.news;
-            refreshData();
-            handleSearch();
-        }
-    } catch (e) {
-        // Fallback to local storage if the file is not found or GitHub is down
-        newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
-        refreshData();
-        handleSearch();
-    }
-}
+
