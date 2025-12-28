@@ -11,7 +11,7 @@ async function loadSharedNews() {
     const GITHUB_URL = 'https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json';
     
     try {
-        const response = await fetch(GITHUB_URL);
+        const response = await fetch(GITHUB_URL + '?nocache=' + new Date().getTime());
         if (response.ok) {
             const shared = await response.json();
             newsData = shared.news;
