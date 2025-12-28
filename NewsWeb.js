@@ -5,29 +5,54 @@ let filterEnabled = false;
 
 window.onload = () => {
     loadSharedNews();
+    setupTheme(); // Initialize theme button
 };
 
+// FIX: Cache-buster added to URL to bypass GitHub's old data
 async function loadSharedNews() {
     const GITHUB_URL = 'https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json';
+    const feed = document.getElementById('news-feed');
     
+    if (feed) feed.innerHTML = "<p style='text-align:center; padding:20px;'>Syncing with PBUDD-HUB servers...</p>";
+
     try {
-        const response = await fetch(GITHUB_URL + '?nocache=' + new Date().getTime());
+        // Adding a timestamp prevents GitHub from showing you an old version of the file
+        const response = await fetch(GITHUB_URL + '?t=' + new Date().getTime());
         if (response.ok) {
             const shared = await response.json();
             newsData = shared.news;
-            console.log("Global news loaded successfully.");
+            console.log("Global news synchronized.");
         } else {
-            console.warn("GitHub file not found, loading local data.");
+            console.warn("Shared file not found. Loading local cache.");
             newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
         }
     } catch (e) {
-        console.error("Connection error:", e);
+        console.error("Network error:", e);
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
     }
     
-    // Force a visual refresh after data is loaded
     refreshData();
     handleSearch();
+}
+
+// FIX: Theme switcher logic rewritten for reliability
+function setupTheme() {
+    const themeBtn = document.getElementById('theme-toggle');
+    if (!themeBtn) return;
+
+    themeBtn.onclick = () => {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+        
+        document.body.setAttribute('data-theme', newTheme);
+        themeBtn.textContent = (newTheme === 'dark') ? '☀️' : '🌙';
+        localStorage.setItem('budd_theme', newTheme);
+    };
+
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('budd_theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    themeBtn.textContent = (savedTheme === 'dark') ? '☀️' : '🌙';
 }
 
 function refreshData() {
@@ -85,18 +110,39 @@ function renderFeed(stories) {
         </article><hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">`).join('') : "<p style='text-align:center;'>No stories found. Please check your GitHub upload.</p>";
 }
 
-// --- ADMIN & UI HELPERS ---
+function handleAction(cat, idx) {
+    if (currentCategory === 'all') { 
+        currentCategory = cat; 
+        updateNavUI(cat);
+        handleSearch(); 
+        window.scrollTo({top:0, behavior:'smooth'}); 
+    } else { 
+        const box = document.getElementById(`text-container-${idx}`); 
+        box.classList.toggle('show-text'); 
+    }
+}
+
+function updateNavUI(c) { 
+    document.querySelectorAll('.nav-item').forEach(l => { 
+        l.classList.remove('active-page'); 
+        if(l.dataset.category === c) l.classList.add('active-page'); 
+    }); 
+}
+
+// --- ADMIN CONTROLS ---
+function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
+function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
+function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Access Denied."); }
+function showTab(t) { ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); if (t === 'manage') renderManageList(); }
+function renderManageList() { document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `<div style="display:flex; padding:8px; border-bottom:1px solid #ddd; font-size:11px;"><span>${s.title.slice(0,30)}...</span><button onclick="deletePost(${i})" style="color:red; margin-left:auto; background:none; border:none; cursor:pointer;">DEL</button></div>`).join(''); }
+function deletePost(i) { const s = newsData.all[i]; newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date); refreshData(); renderManageList(); handleSearch(); }
+function exportData() { const d = JSON.stringify({ news: newsData }, null, 2); const b = new Blob([d], { type: "application/json" }); const u = URL.createObjectURL(b); const l = document.createElement('a'); l.href = u; l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); document.body.removeChild(l); }
+
+// Toggle Date UI
 function toggleFilterUI() {
     const r = document.getElementById('date-filter-row');
     filterEnabled = (r.style.display === 'none' || r.style.display === '');
     r.style.display = filterEnabled ? 'flex' : 'none';
-    if (!filterEnabled) clearFilters();
-}
-
-function clearFilters() { 
-    document.getElementById('filter-date-from').value = ''; 
-    document.getElementById('filter-date-to').value = ''; 
-    handleSearch(); 
 }
 
 function submitPost() {
@@ -122,19 +168,10 @@ function submitPost() {
     }, 1200);
 }
 
-function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
-function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
-function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Access Denied."); }
-function showTab(t) { ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); if (t === 'manage') renderManageList(); }
-function renderManageList() { document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `<div style="display:flex; padding:8px; border-bottom:1px solid #ddd; font-size:11px;"><span>${s.title.slice(0,30)}...</span><button onclick="deletePost(${i})" style="color:red; margin-left:auto; background:none; border:none; cursor:pointer;">DEL</button></div>`).join(''); }
-function deletePost(i) { const s = newsData.all[i]; newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date); refreshData(); renderManageList(); handleSearch(); }
-function exportData() { const d = JSON.stringify({ news: newsData }, null, 2); const b = new Blob([d], { type: "application/json" }); const u = URL.createObjectURL(b); const l = document.createElement('a'); l.href = u; l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); document.body.removeChild(l); }
-function handleAction(cat, idx) { if (currentCategory === 'all') { currentCategory = cat; handleSearch(); } else { document.getElementById(`text-container-${idx}`).classList.toggle('show-text'); } }
-
+// Global Category Listeners
 document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', e => {
     e.preventDefault();
     currentCategory = l.dataset.category;
-    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active-page'));
-    l.classList.add('active-page');
+    updateNavUI(currentCategory);
     handleSearch();
 }));
