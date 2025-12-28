@@ -36,8 +36,7 @@
         <div class="brand-section">
             <button class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
             <h1 class="main-logo">PBUDD-HUB</h1>
-            <div style="width: 40px;"></div> 
-        </div>
+            <div style="width: 30px;"></div> </div>
 
         <div class="action-bar">
             <div class="search-layout-wrapper">
@@ -45,7 +44,16 @@
                     <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
                     <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
                 </div>
+                <button class="icon-btn-circle" onclick="toggleFilterUI()"><i class="fas fa-calendar-alt"></i></button>
             </div>
+        </div>
+
+        <div id="date-filter-row" class="filter-row" style="display: none;">
+            <div class="filter-group">
+                <label>From:</label><input type="date" id="filter-date-from" onchange="handleSearch()">
+                <label>To:</label><input type="date" id="filter-date-to" onchange="handleSearch()">
+            </div>
+            <button class="clear-filter-btn" onclick="clearFilters()">Reset</button>
         </div>
     </header>
 
@@ -55,7 +63,7 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h4>About PBUDD-HUB</h4>
-                <p>A premium news hub dedicated to verified journalism, tech innovation, and financial clarity. Your lens into the world's most important stories.</p>
+                <p>Your premier destination for verified high-impact journalism, financial clarity, and tech updates.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -73,14 +81,15 @@
             </div>
             
             <div class="footer-section">
-                <h4>Verified Network</h4>
+                <h4>Official Channel</h4>
                 <a href="mailto:ebenezerewemoje@gmail.com" class="footer-link">ebenezerewemoje@gmail.com</a>
-                <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">&copy; 2025 PBUDD-HUB Network.</p>
+                <p style="margin-top: 20px;">&copy; 2025 PBUDD-HUB Network.</p>
             </div>
         </div>
     </footer>
 
     <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
+
     <script src="NewsWeb.js"></script>
 </body>
 </html>
