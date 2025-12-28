@@ -32,12 +32,12 @@ function selectCategory(cat) {
 function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
 
 async function loadSharedNews() {
+    const jsonFilePath = 'BUDD-HUB-Backup.json'; 
     try {
-        const response = await fetch('BUDD-HUB-Backup.json?t=' + new Date().getTime());
-        if (response.ok) {
-            const shared = await response.json();
-            newsData = shared.news;
-        }
+        const response = await fetch(jsonFilePath + '?t=' + new Date().getTime());
+        if (!response.ok) throw new Error('Fetch failed');
+        const shared = await response.json();
+        if (shared.news) newsData = shared.news;
     } catch (e) {
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
     }
