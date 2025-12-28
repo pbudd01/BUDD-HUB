@@ -9,6 +9,11 @@
 </head>
 <body data-theme="light">
 
+    <div class="ticker-wrap">
+        <div class="ticker-label">BREAKING</div>
+        <div class="ticker-content" id="ticker-scroll"></div>
+    </div>
+
     <div id="side-menu" class="side-drawer">
         <div class="drawer-header">
             <h3>PBUDD-HUB</h3>
@@ -22,7 +27,7 @@
             <a href="#" class="drawer-item" data-category="international" onclick="toggleMenu()">International</a>
             <a href="#" class="drawer-item" data-category="sports" onclick="toggleMenu()">Sports</a>
             <a href="#" class="drawer-item" data-category="fashion" onclick="toggleMenu()">Fashion</a>
-            <hr>
+            <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
             <button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>
         </nav>
     </div>
@@ -33,6 +38,7 @@
             <h1 class="main-logo">PBUDD-HUB</h1>
             <div style="width: 40px;"></div> 
         </div>
+
         <div class="action-bar">
             <div class="search-layout-wrapper">
                 <div class="search-pill">
@@ -49,8 +55,8 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h4>About PBUDD-HUB</h4>
-                <p>PBUDD-HUB is your reliable source for global insights, delivering fast and verified news across multiple categories.</p>
-                <div class="social-icons" style="margin-top: 20px;">
+                <p>PBUDD-HUB delivers high-impact journalism and verified news updates across technology, finance, and global affairs.</p>
+                <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -62,18 +68,19 @@
                 <form id="contact-form" class="footer-contact-form">
                     <input type="text" id="contact-subject" placeholder="Subject" required>
                     <textarea id="contact-message" placeholder="Your Message" required></textarea>
-                    <button type="submit" class="contact-send-btn">Send Message</button>
+                    <button type="submit" class="contact-send-btn">Send to Editorial</button>
                 </form>
             </div>
             
             <div class="footer-section">
-                <h4>Admin</h4>
+                <h4>Official Email</h4>
                 <a href="mailto:ebenezerewemoje@gmail.com" class="footer-link">ebenezerewemoje@gmail.com</a>
-                <p style="margin-top: 20px;">&copy; 2025 PBUDD-HUB.</p>
+                <p style="margin-top: 20px; font-size: 0.8rem;">&copy; 2025 PBUDD-HUB Network.</p>
             </div>
         </div>
     </footer>
 
+    <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
     <script src="NewsWeb.js"></script>
 </body>
 </html>
