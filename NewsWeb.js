@@ -13,12 +13,24 @@ window.onload = () => {
 function initNavs() {
     const horizontalNav = document.getElementById('horizontal-nav');
     const drawerNav = document.getElementById('drawer-nav-list');
-    const navHTML = categories.map(cat => 
+    
+    // Horizontal items for the main header
+    const horizontalHTML = categories.map(cat => 
         `<a href="#" class="nav-item ${cat === currentCategory ? 'active-page' : ''}" 
             data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
     ).join('');
-    if(horizontalNav) horizontalNav.innerHTML = navHTML;
-    if(drawerNav) drawerNav.innerHTML = navHTML + `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(128,128,128,0.3);"><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
+    
+    // Vertical items for the Side Menu (Drawer)
+    const verticalHTML = categories.map(cat => 
+        `<a href="#" class="drawer-item" data-category="${cat}" onclick="selectCategory('${cat}')">
+            ${cat.toUpperCase()}
+         </a>`
+    ).join('');
+    
+    if(horizontalNav) horizontalNav.innerHTML = horizontalHTML;
+    if(drawerNav) drawerNav.innerHTML = verticalHTML + 
+        `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(128,128,128,0.3);">
+         <button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
 }
 
 function selectCategory(cat) {
@@ -92,7 +104,6 @@ function handleSearch() {
     renderFeed(filtered);
 }
 
-// ADMIN CMS
 function verifyAdmin() {
     if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
         document.getElementById('login-section').style.display = 'none';
@@ -101,9 +112,7 @@ function verifyAdmin() {
 }
 function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
-function showTab(t) { 
-    ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); 
-}
+function showTab(t) { ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); }
 
 function submitPost() {
     const cat = document.getElementById('post-category').value;
@@ -119,19 +128,6 @@ function submitPost() {
     refreshData(); closeAdminPanel();
 }
 
-function renderManageList() {
-    document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
-        <div style="display:flex; padding:10px; border-bottom:1px solid #ddd; align-items:center;">
-            <span style="flex:1; font-size:0.8rem;">${s.title.slice(0,30)}...</span>
-            <button onclick="deletePost(${i})" style="color:red; background:none; border:none; cursor:pointer;">DEL</button>
-        </div>`).join('');
-}
-function deletePost(i) {
-    const s = newsData.all[i];
-    newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date);
-    localStorage.setItem('budd_news', JSON.stringify(newsData));
-    refreshData(); renderManageList();
-}
 function exportData() {
     const b = new Blob([JSON.stringify({ news: newsData })], { type: "application/json" });
     const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; l.click();
