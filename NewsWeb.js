@@ -237,3 +237,21 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
 });
+// This function fetches your uploaded file from GitHub
+async function loadSharedNews() {
+    try {
+        // REPLACE 'pbudd01' with your username and 'B...' with your repository name
+        const response = await fetch('https://raw.githubusercontent.com/pbudd01/YOUR_REPOSITORY_NAME/main/BUDD-HUB-Backup.json');
+        if (response.ok) {
+            const sharedData = await response.json();
+            newsData = sharedData.news;
+            refreshData();
+            handleSearch();
+        }
+    } catch (e) {
+        // Fallback to local storage if the file is missing or there's an error
+        newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
+        refreshData();
+        handleSearch();
+    }
+}
