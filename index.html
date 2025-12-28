@@ -19,7 +19,8 @@
             <h3>PBUDD-HUB</h3>
             <span class="close-drawer" onclick="toggleMenu()">&times;</span>
         </div>
-        <nav class="drawer-nav" id="drawer-nav-list"></nav>
+        <nav class="drawer-nav" id="drawer-nav-list">
+            </nav>
     </div>
 
     <header class="glass-header">
@@ -39,7 +40,8 @@
         </div>
 
         <nav class="category-bar-horizontal">
-            <div class="nav-scroll-container" id="horizontal-nav"></div>
+            <div class="nav-scroll-container" id="horizontal-nav">
+                </div>
         </nav>
     </header>
 
@@ -48,50 +50,61 @@
     <div id="admin-panel" class="admin-overlay">
         <div class="admin-content site-theme-dashboard">
             <div class="admin-header-main">
-                <div class="admin-brand"><h2>PBUDD-HUB CMS</h2></div>
+                <div class="admin-brand"><span class="hub-tag">PRO</span><h2>PBUDD-HUB CMS</h2></div>
                 <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
             </div>
-            <div id="login-section">
-                <input type="password" id="admin-pass" placeholder="Security Key" class="site-input">
+            
+            <div id="login-section" class="login-shield">
+                <p>Security Required</p>
+                <input type="password" id="admin-pass" placeholder="Enter Security Key" class="site-input">
                 <button class="budd-read-more" onclick="verifyAdmin()">Unlock</button>
             </div>
+
             <div id="admin-dashboard" style="display:none;">
                 <div class="admin-tabs">
-                    <button id="btn-tab-create" onclick="showTab('create')">Compose</button>
-                    <button id="btn-tab-manage" onclick="showTab('manage')">Database</button>
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">✍️ Compose</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">📂 Database</button>
                 </div>
-                <div id="tab-create">
+
+                <div id="tab-create" class="admin-scroll-area">
                     <input type="hidden" id="edit-index">
                     <select id="post-category" class="site-input">
                         <option value="local">Local</option><option value="tech">Tech</option>
                         <option value="finance">Finance</option><option value="international">International</option>
                         <option value="sports">Sports</option><option value="fashion">Fashion</option>
                     </select>
-                    <input type="text" id="post-title" class="site-input" placeholder="Headline">
+                    <input type="text" id="post-title" class="site-input" placeholder="Main Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
-                    <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" placeholder="Content"></textarea>
-                    <button class="publish-action-btn" onclick="submitPost()">Publish</button>
+                    <textarea id="post-summary" class="site-input" placeholder="News Hook/Summary"></textarea>
+                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story Content"></textarea>
+                    <button id="publish-btn" class="publish-action-btn" onclick="submitPost()">Publish to Hub</button>
                 </div>
-                <div id="tab-manage" style="display:none;">
-                    <button onclick="exportData()">Backup JSON</button>
-                    <div id="manage-list"></div>
+
+                <div id="tab-manage" class="admin-scroll-area" style="display:none;">
+                    <div class="admin-backup-controls">
+                        <button class="backup-btn" onclick="exportData()">📥 Backup</button>
+                        <button class="backup-btn" onclick="triggerImport()">📤 Restore</button>
+                        <input type="file" id="import-file" style="display:none;" onchange="importData(event)">
+                    </div>
+                    <div id="manage-list" class="db-grid"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <footer class="site-footer">
+        <div class="footer-top-line"></div>
         <div class="footer-grid">
             <div class="footer-section">
                 <h2 class="footer-logo">PBUDD-HUB</h2>
-                <p>Verified premium journalism delivering high-impact news.</p>
+                <p>Delivering high-fidelity journalism and verified news updates across the globe. Your premium lens into tech, finance, and culture.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
+
             <div class="footer-section">
                 <h4>Editorial Enquiries</h4>
                 <form id="contact-form" class="premium-form">
@@ -100,15 +113,19 @@
                     <button type="submit">Submit Inquiry</button>
                 </form>
             </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <a href="mailto:ebenezerewemoje@gmail.com">ebenezerewemoje@gmail.com</a>
-                <p>&copy; 2025 PBUDD-HUB.</p>
+            
+            <div class="footer-section contact-info">
+                <h4>Contact Info</h4>
+                <a href="mailto:ebenezerewemoje@gmail.com"><i class="fas fa-envelope"></i> ebenezerewemoje@gmail.com</a>
+                <p><i class="fas fa-shield-alt"></i> Verified Content Provider</p>
+                <p class="copyright">&copy; 2025 PBUDD-HUB. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
+
     <script src="NewsWeb.js"></script>
 </body>
 </html>
+
