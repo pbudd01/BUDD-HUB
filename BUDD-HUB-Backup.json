@@ -10,7 +10,16 @@
         "date": "2025-12-28T09:26:39.526Z"
       }
     ],
-    "tech": [],
+    "tech": [
+      {
+        "category": "tech",
+        "title": "Israel's Tech Sector Faces Brain Drain Crisis as Staff Seek Relocation Abroad",
+        "image": "https://i.postimg.cc/zvxsjQzk/Screenshot-2025-12-28-205438.png",
+        "summary": "A new report reveals a significant rise in Israeli technology workers seeking to move overseas, driven by ongoing regional instability and economic uncertainty.",
+        "fullText": "The backbone of Israel's economy is showing signs of strain as a growing number of tech professionals explore opportunities outside the country. According to a recent industry report, the prolonged conflict and the resulting social and economic volatility have triggered a surge in relocation requests among high-tech employees. This trend poses a serious threat to Israel's status as a global innovation hub, as the \"Startup Nation\" risks losing its most valuable talent to more stable markets in Europe and North America.\n\nTech leaders and CEOs expressed concern that the flight of human capital could lead to a long-term decline in domestic investment and research development. While the sector has remained resilient during previous crises, the current data suggests that the duration of the unrest is pushing even senior-level engineers and entrepreneurs to seek a more predictable future elsewhere. Experts warn that without significant shifts in the geopolitical climate or targeted government intervention to retain talent, the exodus could permanently reshape the landscape of the Israeli technology industry.",
+        "date": "2025-12-28T19:55:29.689Z"
+      }
+    ],
     "finance": [],
     "international": [],
     "sports": [
@@ -41,6 +50,14 @@
     ],
     "fashion": [],
     "all": [
+      {
+        "category": "tech",
+        "title": "Israel's Tech Sector Faces Brain Drain Crisis as Staff Seek Relocation Abroad",
+        "image": "https://i.postimg.cc/zvxsjQzk/Screenshot-2025-12-28-205438.png",
+        "summary": "A new report reveals a significant rise in Israeli technology workers seeking to move overseas, driven by ongoing regional instability and economic uncertainty.",
+        "fullText": "The backbone of Israel's economy is showing signs of strain as a growing number of tech professionals explore opportunities outside the country. According to a recent industry report, the prolonged conflict and the resulting social and economic volatility have triggered a surge in relocation requests among high-tech employees. This trend poses a serious threat to Israel's status as a global innovation hub, as the \"Startup Nation\" risks losing its most valuable talent to more stable markets in Europe and North America.\n\nTech leaders and CEOs expressed concern that the flight of human capital could lead to a long-term decline in domestic investment and research development. While the sector has remained resilient during previous crises, the current data suggests that the duration of the unrest is pushing even senior-level engineers and entrepreneurs to seek a more predictable future elsewhere. Experts warn that without significant shifts in the geopolitical climate or targeted government intervention to retain talent, the exodus could permanently reshape the landscape of the Israeli technology industry.",
+        "date": "2025-12-28T19:55:29.689Z"
+      },
       {
         "category": "sports",
         "title": "2025 Globe Soccer Awards: Dembele, Yamal, and Ronaldo Claim Top Honors in Dubai",
@@ -74,5 +91,3 @@
         "date": "2025-12-27T23:05:01.640Z"
       }
     ]
-  }
-}
