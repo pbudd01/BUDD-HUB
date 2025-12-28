@@ -8,7 +8,7 @@ window.onload = () => {
 };
 
 async function loadSharedNews() {
-    const GITHUB_URL = 'https://github.com/pbudd01/BUDD-HUB/BUDD-HUB-Backup.json';
+    const GITHUB_URL = 'https://github.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json';
     
     try {
         const response = await fetch(GITHUB_URL);
