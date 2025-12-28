@@ -5,29 +5,36 @@ let filterEnabled = false;
 
 window.onload = () => {
     loadSharedNews();
-    setupTheme(); // Initialize theme button
+    setupTheme();
 };
 
-// FIX: Cache-buster added to URL to bypass GitHub's old data
+/**
+ * RELATIVE PATH FETCH:
+ * Accesses the .json file directly from your repository root.
+ */
 async function loadSharedNews() {
-    const GITHUB_URL = 'https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json';
+    const jsonFilePath = 'BUDD-HUB-Backup.json'; // Relative path to your file
     const feed = document.getElementById('news-feed');
     
-    if (feed) feed.innerHTML = "<p style='text-align:center; padding:20px;'>Syncing with PBUDD-HUB servers...</p>";
+    if (feed) feed.innerHTML = "<p style='text-align:center; padding:20px;'>Syncing PBUDD-HUB Feed...</p>";
 
     try {
-        // Adding a timestamp prevents GitHub from showing you an old version of the file
-        const response = await fetch(GITHUB_URL + '?t=' + new Date().getTime());
-        if (response.ok) {
-            const shared = await response.json();
-            newsData = shared.news;
-            console.log("Global news synchronized.");
-        } else {
-            console.warn("Shared file not found. Loading local cache.");
-            newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
+        // Fetch request using the relative path
+        const response = await fetch(jsonFilePath + '?t=' + new Date().getTime());
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText); // Error handling
         }
-    } catch (e) {
-        console.error("Network error:", e);
+        
+        const shared = await response.json(); // Parse the JSON data
+        
+        if (shared.news) {
+            newsData = shared.news;
+            console.log("Global data loaded successfully via relative path.");
+        }
+    } catch (error) {
+        console.error('Fetch operation failed:', error);
+        // Fallback to local memory if GitHub file is missing or error occurs
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
     }
     
@@ -35,26 +42,24 @@ async function loadSharedNews() {
     handleSearch();
 }
 
-// FIX: Theme switcher logic rewritten for reliability
+// --- THEME ENGINE ---
 function setupTheme() {
     const themeBtn = document.getElementById('theme-toggle');
     if (!themeBtn) return;
-
-    themeBtn.onclick = () => {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-        
-        document.body.setAttribute('data-theme', newTheme);
-        themeBtn.textContent = (newTheme === 'dark') ? '☀️' : '🌙';
-        localStorage.setItem('budd_theme', newTheme);
-    };
-
-    // Load saved theme preference
     const savedTheme = localStorage.getItem('budd_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
     themeBtn.textContent = (savedTheme === 'dark') ? '☀️' : '🌙';
+
+    themeBtn.onclick = () => {
+        const current = document.body.getAttribute('data-theme');
+        const next = (current === 'dark') ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        themeBtn.textContent = (next === 'dark') ? '☀️' : '🌙';
+        localStorage.setItem('budd_theme', next);
+    };
 }
 
+// --- DATA ENGINE ---
 function refreshData() {
     const cats = ['local', 'tech', 'finance', 'international', 'sports', 'fashion'];
     let combined = [];
@@ -74,6 +79,7 @@ function updateTicker() {
         `<div class="ticker-item">Welcome to PBUDD-HUB</div>`;
 }
 
+// --- SEARCH & UI ENGINE ---
 function handleSearch() {
     const q = document.getElementById('main-search').value.toLowerCase();
     const from = document.getElementById('filter-date-from').value;
@@ -88,7 +94,6 @@ function handleSearch() {
             filtered = filtered.filter(s => new Date(s.date) <= e); 
         }
     }
-    
     if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
     renderFeed(filtered);
 }
@@ -107,7 +112,7 @@ function renderFeed(stories) {
                 <p>${s.fullText}</p>
             </div>
             <button class="budd-read-more" onclick="handleAction('${s.category}', ${i})">READ STORY</button>
-        </article><hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">`).join('') : "<p style='text-align:center;'>No stories found. Please check your GitHub upload.</p>";
+        </article><hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">`).join('') : "<p style='text-align:center;'>No news available. Use Admin Hub to post.</p>";
 }
 
 function handleAction(cat, idx) {
@@ -117,33 +122,14 @@ function handleAction(cat, idx) {
         handleSearch(); 
         window.scrollTo({top:0, behavior:'smooth'}); 
     } else { 
-        const box = document.getElementById(`text-container-${idx}`); 
-        box.classList.toggle('show-text'); 
+        document.getElementById(`text-container-${idx}`).classList.toggle('show-text'); 
     }
 }
 
-function updateNavUI(c) { 
-    document.querySelectorAll('.nav-item').forEach(l => { 
-        l.classList.remove('active-page'); 
-        if(l.dataset.category === c) l.classList.add('active-page'); 
-    }); 
-}
-
-// --- ADMIN CONTROLS ---
+// --- ADMIN & MANAGEMENT ---
 function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
 function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Access Denied."); }
-function showTab(t) { ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); if (t === 'manage') renderManageList(); }
-function renderManageList() { document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `<div style="display:flex; padding:8px; border-bottom:1px solid #ddd; font-size:11px;"><span>${s.title.slice(0,30)}...</span><button onclick="deletePost(${i})" style="color:red; margin-left:auto; background:none; border:none; cursor:pointer;">DEL</button></div>`).join(''); }
-function deletePost(i) { const s = newsData.all[i]; newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date); refreshData(); renderManageList(); handleSearch(); }
-function exportData() { const d = JSON.stringify({ news: newsData }, null, 2); const b = new Blob([d], { type: "application/json" }); const u = URL.createObjectURL(b); const l = document.createElement('a'); l.href = u; l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); document.body.removeChild(l); }
-
-// Toggle Date UI
-function toggleFilterUI() {
-    const r = document.getElementById('date-filter-row');
-    filterEnabled = (r.style.display === 'none' || r.style.display === '');
-    r.style.display = filterEnabled ? 'flex' : 'none';
-}
 
 function submitPost() {
     const btn = document.getElementById('publish-btn');
@@ -168,7 +154,36 @@ function submitPost() {
     }, 1200);
 }
 
-// Global Category Listeners
+function deletePost(i) {
+    if (confirm("ERASE PERMANENTLY?")) {
+        const s = newsData.all[i];
+        newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date);
+        refreshData(); renderManageList(); handleSearch();
+    }
+}
+
+function exportData() { 
+    const d = JSON.stringify({ news: newsData }, null, 2); 
+    const b = new Blob([d], { type: "application/json" }); 
+    const u = URL.createObjectURL(b); 
+    const l = document.createElement('a'); 
+    l.href = u; l.download = `BUDD-HUB-Backup.json`; 
+    document.body.appendChild(l); l.click(); document.body.removeChild(l); 
+}
+
+function renderManageList() { 
+    document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
+    <div style="display:flex; padding:8px; border-bottom:1px solid #ddd; font-size:11px;">
+        <span>${s.title.slice(0,30)}...</span>
+        <button onclick="deletePost(${i})" style="color:red; margin-left:auto; background:none; border:none; cursor:pointer;">DEL</button>
+    </div>`).join(''); 
+}
+
+function showTab(t) { ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'); if (t === 'manage') renderManageList(); }
+function updateNavUI(c) { document.querySelectorAll('.nav-item').forEach(l => { l.classList.remove('active-page'); if(l.dataset.category === c) l.classList.add('active-page'); }); }
+function toggleFilterUI() { const r = document.getElementById('date-filter-row'); filterEnabled = (r.style.display === 'none' || r.style.display === ''); r.style.display = filterEnabled ? 'flex' : 'none'; }
+
+// Listeners
 document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', e => {
     e.preventDefault();
     currentCategory = l.dataset.category;
