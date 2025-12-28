@@ -237,11 +237,10 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
 });
-// This function fetches your uploaded file from GitHub
 async function loadSharedNews() {
     try {
-        // REPLACE 'pbudd01' with your username and 'B...' with your repository name
-        const response = await fetch('https://raw.githubusercontent.com/pbudd01/YOUR_REPOSITORY_NAME/main/BUDD-HUB-Backup.json');
+        // Updated with your GitHub username (pbudd01) and repository name (BUDD-HUB)
+        const response = await fetch('https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json');
         if (response.ok) {
             const sharedData = await response.json();
             newsData = sharedData.news;
@@ -249,7 +248,7 @@ async function loadSharedNews() {
             handleSearch();
         }
     } catch (e) {
-        // Fallback to local storage if the file is missing or there's an error
+        // Fallback to local storage if the file is not found or GitHub is down
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
         refreshData();
         handleSearch();
