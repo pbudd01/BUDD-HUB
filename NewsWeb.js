@@ -13,12 +13,20 @@ window.onload = () => {
 function initNavs() {
     const horizontalNav = document.getElementById('horizontal-nav');
     const drawerNav = document.getElementById('drawer-nav-list');
+    
+    // Horizontal Bar (PC View)
     const navHTML = categories.map(cat => 
         `<a href="#" class="nav-item ${cat === currentCategory ? 'active-page' : ''}" 
             data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
     ).join('');
+    
+    // Vertical List (Sidebar/Drawer)
+    const drawerHTML = categories.map(cat => 
+        `<a href="#" class="drawer-item" data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
+    ).join('') + `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(0,0,0,0.1);"><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
+    
     if(horizontalNav) horizontalNav.innerHTML = navHTML;
-    if(drawerNav) drawerNav.innerHTML = navHTML + `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(0,0,0,0.1);"><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
+    if(drawerNav) drawerNav.innerHTML = drawerHTML;
 }
 
 function selectCategory(cat) {
@@ -65,6 +73,14 @@ function renderFeed(stories) {
     const feed = document.getElementById('news-feed');
     feed.innerHTML = stories.length ? stories.map((s, i) => {
         const storyId = encodeURIComponent(s.title.substring(0, 20)).replace(/%20/g, '-');
+        
+        // Paragraph Logic: Converts line breaks in Admin Hub to <p> tags
+        const formattedFullText = s.fullText
+            .split('\n')
+            .filter(para => para.trim() !== '')
+            .map(para => `<p style="margin-bottom: 15px;">${para}</p>`)
+            .join('');
+
         return `
         <article class="news-article" id="${storyId}">
             <div class="article-meta">
@@ -77,8 +93,8 @@ function renderFeed(stories) {
             <h2>${s.title}</h2>
             <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200?text=PBUDD-HUB'">
             <div id="text-container-${i}" class="text-container">
-                <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:15px;">${s.summary}</p>
-                <p>${s.fullText}</p>
+                <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:20px;">${s.summary}</p>
+                <div class="full-story-content">${formattedFullText}</div>
             </div>
             <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i}, '${s.category}')">READ STORY</button>
         </article><hr style="margin:25px 0; border:0; border-top:1px solid #eee;">`;
@@ -115,9 +131,8 @@ function checkDeepLink() {
             const element = document.getElementById(storyId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
-                element.style.border = "2px solid orange";
-                element.style.borderRadius = "10px";
-                element.style.padding = "10px";
+                element.style.borderLeft = "4px solid orange";
+                element.style.paddingLeft = "10px";
             }
         }, 1000);
     }
@@ -130,7 +145,7 @@ function handleSearch() {
     renderFeed(filtered);
 }
 
-// --- CMS ---
+// --- CMS ADMIN FUNCTIONS ---
 function verifyAdmin() {
     if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
         document.getElementById('login-section').style.display = 'none';
@@ -146,7 +161,8 @@ function showTab(t) {
 function submitPost() {
     const cat = document.getElementById('post-category').value;
     const post = { 
-        category: cat, title: document.getElementById('post-title').value, 
+        category: cat, 
+        title: document.getElementById('post-title').value, 
         image: document.getElementById('post-image').value, 
         summary: document.getElementById('post-summary').value, 
         fullText: document.getElementById('post-full').value, 
