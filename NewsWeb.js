@@ -10,7 +10,7 @@ window.onload = () => {
 
 // FIX: Cache-buster added to URL to bypass GitHub's old data
 async function loadSharedNews() {
-    const GITHUB_URL = 'https://raw.githubusercontent.com/pbudd01/BUDD-HUB/main/BUDD-HUB-Backup.json';
+    const GITHUB_URL = 'https://github.com/pbudd01/BUDD-HUB/blob/main/NewsWeb.js';
     const feed = document.getElementById('news-feed');
     
     if (feed) feed.innerHTML = "<p style='text-align:center; padding:20px;'>Syncing with PBUDD-HUB servers...</p>";
