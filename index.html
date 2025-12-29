@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PBUDD-HUB | Premium News Portal</title>
     <link rel="stylesheet" href="NewsWeb.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -67,7 +67,7 @@
                 <div id="tab-create">
                     <input type="hidden" id="edit-index" value="">
                     <label class="cms-label">Hold CTRL to select multiple categories:</label>
-                    <select id="post-category" class="site-input" multiple style="height: 100px;">
+                    <select id="post-category" class="site-input" multiple>
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
                         <option value="tech">Tech</option>
@@ -80,7 +80,7 @@
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story..."></textarea>
+                    <textarea id="post-full" class="site-input" placeholder="Full Story..."></textarea>
                     <div class="admin-actions">
                         <button class="action-btn-main" onclick="submitPost()">Publish</button>
                         <button class="action-btn-sub" onclick="saveDraft()">Draft</button>
@@ -99,8 +99,7 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h2 class="footer-logo">PBUDD-HUB</h2>
-                <h4>About Us</h4>
-                <p>PBUDD-HUB is a premier digital news platform dedicated to providing verified, high-impact journalism. We focus on delivering real-time updates with integrity and accuracy.</p>
+                <p>Verified premium journalism delivering high-impact news.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -117,7 +116,7 @@
             </div>
             <div class="footer-section">
                 <h4>Official Contact</h4>
-                <a href="mailto:pbuddhub@gmail.com" class="footer-link-orange">pbuddhub@gmail.com</a>
+                <a href="mailto:pbuddhub@gmail.com" class="footer-link">pbuddhub@gmail.com</a>
                 <p style="margin-top:20px;">&copy; 2025 PBUDD-HUB Network.</p>
             </div>
         </div>
