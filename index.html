@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PBUDD-HUB | Premium News Portal</title>
     <link rel="stylesheet" href="NewsWeb.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,10 +32,12 @@
         </div>
 
         <div class="action-bar">
-            <div class="search-pill">
-                <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
-                <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
-                <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            <div class="search-layout-wrapper">
+                <div class="search-pill">
+                    <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
+                    <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+                    <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+                </div>
             </div>
         </div>
 
@@ -64,8 +66,8 @@
                 </div>
                 <div id="tab-create">
                     <input type="hidden" id="edit-index" value="">
-                    <label class="cms-label">Categories (CTRL+Click):</label>
-                    <select id="post-category" class="site-input" multiple>
+                    <label class="cms-label">Hold CTRL to select multiple categories:</label>
+                    <select id="post-category" class="site-input" multiple style="height: 100px;">
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
                         <option value="tech">Tech</option>
@@ -78,15 +80,15 @@
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" placeholder="Full Story..."></textarea>
-                    <div class="admin-actions">
+                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story..."></textarea>
+                    <div style="display: flex; gap: 10px;">
                         <button class="action-btn-main" onclick="submitPost()">Publish</button>
                         <button class="action-btn-sub" onclick="saveDraft()">Draft</button>
                     </div>
                 </div>
                 <div id="tab-drafts-tab" style="display:none;"><div id="drafts-list" class="db-list"></div></div>
                 <div id="tab-manage" style="display:none;">
-                    <button class="publish-action-btn" onclick="exportData()">Backup JSON</button>
+                    <button class="backup-btn" onclick="exportData()">Backup JSON</button>
                     <div id="manage-list" class="db-list"></div>
                 </div>
             </div>
