@@ -104,6 +104,7 @@ function updateTicker() {
 function renderFeed(stories) {
     const feed = document.getElementById('news-feed');
     feed.innerHTML = stories.length ? stories.map((s, i) => {
+        // Formats line breaks into paragraphs
         const formattedFullText = s.fullText.split('\n').filter(p => p.trim() !== '').map(p => `<p style="margin-bottom:15px;">${p}</p>`).join('');
         
         return `
