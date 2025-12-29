@@ -13,18 +13,13 @@ window.onload = () => {
 function initNavs() {
     const horizontalNav = document.getElementById('horizontal-nav');
     const drawerNav = document.getElementById('drawer-nav-list');
-    
-    // Horizontal Bar (PC View)
     const navHTML = categories.map(cat => 
         `<a href="#" class="nav-item ${cat === currentCategory ? 'active-page' : ''}" 
             data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
     ).join('');
-    
-    // Vertical List (Sidebar/Drawer)
     const drawerHTML = categories.map(cat => 
-        `<a href="#" class="drawer-item" data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
-    ).join('') + `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(0,0,0,0.1);"><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
-    
+        `<a href="#" class="drawer-item" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
+    ).join('') + `<hr><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
     if(horizontalNav) horizontalNav.innerHTML = navHTML;
     if(drawerNav) drawerNav.innerHTML = drawerHTML;
 }
@@ -40,12 +35,12 @@ function selectCategory(cat) {
 function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
 
 async function loadSharedNews() {
-    const jsonFilePath = 'BUDD-HUB-Backup.json'; 
     try {
-        const response = await fetch(jsonFilePath + '?t=' + new Date().getTime());
-        if (!response.ok) throw new Error('Fetch failed');
-        const shared = await response.json();
-        if (shared.news) newsData = shared.news;
+        const response = await fetch('BUDD-HUB-Backup.json?t=' + new Date().getTime());
+        if (response.ok) {
+            const shared = await response.json();
+            newsData = shared.news;
+        }
     } catch (e) {
         newsData = JSON.parse(localStorage.getItem('budd_news')) || newsData;
     }
@@ -73,54 +68,37 @@ function renderFeed(stories) {
     const feed = document.getElementById('news-feed');
     feed.innerHTML = stories.length ? stories.map((s, i) => {
         const storyId = encodeURIComponent(s.title.substring(0, 20)).replace(/%20/g, '-');
-        
-        // Paragraph Logic: Converts line breaks in Admin Hub to <p> tags
-        const formattedFullText = s.fullText
-            .split('\n')
-            .filter(para => para.trim() !== '')
-            .map(para => `<p style="margin-bottom: 15px;">${para}</p>`)
-            .join('');
-
+        const formattedText = s.fullText.split('\n').filter(p => p.trim() !== '').map(p => `<p style="margin-bottom:15px;">${p}</p>`).join('');
         return `
         <article class="news-article" id="${storyId}">
             <div class="article-meta">
                 <span>${new Date(s.date).toLocaleDateString()}</span>
-                <button class="share-btn" onclick="shareStory('${s.title.replace(/'/g, "\\'")}', '${storyId}')">
-                   <i class="fas fa-share-alt"></i> Share
-                </button>
+                <button class="share-btn" onclick="shareStory('${s.title.replace(/'/g, "\\'")}', '${storyId}')"><i class="fas fa-share-alt"></i> Share</button>
             </div>
-            <div style="color:red; font-weight:bold; font-size:0.7rem; margin-bottom:5px;">PBUDD-HUB ${s.category.toUpperCase()}</div>
+            <div style="color:red; font-weight:bold; font-size:0.7rem;">PBUDD-HUB ${s.category.toUpperCase()}</div>
             <h2>${s.title}</h2>
-            <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200?text=PBUDD-HUB'">
+            <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
             <div id="text-container-${i}" class="text-container">
-                <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:20px;">${s.summary}</p>
-                <div class="full-story-content">${formattedFullText}</div>
+                <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:15px;">${s.summary}</p>
+                <div>${formattedText}</div>
             </div>
             <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i}, '${s.category}')">READ STORY</button>
         </article><hr style="margin:25px 0; border:0; border-top:1px solid #eee;">`;
-    }).join('') : "<p style='text-align:center;'>No stories found.</p>";
+    }).join('') : "<p style='text-align:center;'>Feed synced.</p>";
 }
 
 function handleAction(idx, category) {
     const box = document.getElementById(`text-container-${idx}`); 
     const btn = document.getElementById(`read-btn-${idx}`);
-    
-    if (currentCategory !== category && currentCategory === 'all') {
-        selectCategory(category);
-    }
-
+    if (currentCategory !== category && currentCategory === 'all') selectCategory(category);
     const active = box.classList.toggle('show-text'); 
     btn.textContent = active ? "HIDE STORY" : "READ STORY";
 }
 
 function shareStory(title, storyId) {
     const shareUrl = window.location.origin + window.location.pathname + '?story=' + storyId;
-    if (navigator.share) {
-        navigator.share({ title: title, url: shareUrl });
-    } else {
-        navigator.clipboard.writeText(shareUrl);
-        alert("Story link copied to clipboard!");
-    }
+    if (navigator.share) navigator.share({ title: title, url: shareUrl });
+    else { navigator.clipboard.writeText(shareUrl); alert("Link copied!"); }
 }
 
 function checkDeepLink() {
@@ -128,11 +106,15 @@ function checkDeepLink() {
     const storyId = urlParams.get('story');
     if (storyId) {
         setTimeout(() => {
-            const element = document.getElementById(storyId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-                element.style.borderLeft = "4px solid orange";
-                element.style.paddingLeft = "10px";
+            const el = document.getElementById(storyId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                el.style.borderLeft = "4px solid orange";
+                el.style.paddingLeft = "10px";
+                // Clear URL parameters so refresh takes them home
+                setTimeout(() => {
+                    window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+                }, 2000);
             }
         }, 1000);
     }
@@ -145,12 +127,11 @@ function handleSearch() {
     renderFeed(filtered);
 }
 
-// --- CMS ADMIN FUNCTIONS ---
 function verifyAdmin() {
     if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'block';
-    } else alert("Access Denied.");
+    } else alert("Denied.");
 }
 function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; }
@@ -161,12 +142,10 @@ function showTab(t) {
 function submitPost() {
     const cat = document.getElementById('post-category').value;
     const post = { 
-        category: cat, 
-        title: document.getElementById('post-title').value, 
+        category: cat, title: document.getElementById('post-title').value, 
         image: document.getElementById('post-image').value, 
         summary: document.getElementById('post-summary').value, 
-        fullText: document.getElementById('post-full').value, 
-        date: new Date().toISOString() 
+        fullText: document.getElementById('post-full').value, date: new Date().toISOString() 
     };
     newsData[cat].unshift(post);
     localStorage.setItem('budd_news', JSON.stringify(newsData));
@@ -176,7 +155,7 @@ function renderManageList() {
     document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
         <div style="display:flex; padding:10px; border-bottom:1px solid #ddd; align-items:center;">
             <span style="flex:1; font-size:0.8rem;">${s.title.slice(0,30)}...</span>
-            <button onclick="deletePost(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">DEL</button>
+            <button onclick="deletePost(${i})" style="color:red; background:none; border:none; cursor:pointer;">DEL</button>
         </div>`).join('');
 }
 function deletePost(i) {
@@ -193,7 +172,7 @@ function setupContactForm() {
     const form = document.getElementById('contact-form');
     form.onsubmit = (e) => {
         e.preventDefault();
-        window.location.href = `mailto:ebenezerewemoje@gmail.com?subject=${document.getElementById('contact-subject').value}&body=${document.getElementById('contact-message').value}`;
+        window.location.href = `mailto:pbuddhub@gmail.com?subject=${document.getElementById('contact-subject').value}&body=${document.getElementById('contact-message').value}`;
     };
 }
 function setupTheme() {
