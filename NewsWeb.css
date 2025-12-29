@@ -64,14 +64,11 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .tab-btn { flex: 1; padding: 8px; border: 2px solid #000; background: #eee; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.3s; }
 .tab-btn.active { background: var(--orange); }
 
-/* Fix Unlock and Backup Button Style to Match Theme */
-.publish-action-btn, .backup-btn { background: #000; color: var(--orange); border: 2px solid #000; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; margin-top: 10px; }
-.publish-action-btn:hover, .backup-btn:hover { transform: scale(1.02); background: var(--orange); color: #000; }
+.publish-action-btn, .action-btn-main { background: #000; color: var(--orange); border: 2px solid #000; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; margin-top: 10px; }
+.publish-action-btn:hover, .action-btn-main:hover { transform: scale(1.02); background: var(--orange); color: #000; }
+.action-btn-sub { background: #666; color: var(--orange); border: 2px solid #000; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
 
 .site-input { width: 100%; background: #fff; border: 2px solid #000; padding: 12px; margin-bottom: 12px; border-radius: 8px; font-weight: 600; color: #000; font-size: 0.9rem; }
-.admin-actions { display: flex; gap: 10px; margin-top: 10px; }
-.action-btn-main { flex: 1; background: #000; color: var(--orange); border: 2px solid #000; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-.action-btn-sub { flex: 1; background: #666; color: var(--orange); border: 2px solid #000; padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
 .list-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; border: 1px solid #ddd; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
 .list-title { font-size: 0.75rem; font-weight: 700; color: #000; }
 .list-btns { display: flex; gap: 5px; }
@@ -97,15 +94,32 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 
 /* --- FEED --- */
 .content-wrapper { padding: 30px 5%; max-width: 800px; margin: 0 auto; }
-.news-article { padding-bottom: 20px; }
+.news-article { padding-bottom: 20px; position: relative; } /* Added relative for absolute button positioning */
 .dynamic-img { width: 100%; border-radius: 12px; margin: 15px 0; border: 2px solid #000; transition: 0.5s; }
 .dynamic-img:hover { transform: scale(1.02); }
-.share-btn { background: rgba(0,0,0,0.05); border: 1px solid #ddd; border-radius: 4px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-.share-btn:hover { background: #000; color: #fff; }
+
+/* UPDATED: Share Button in Top Right with Premium Site Theme */
+.article-meta { display: flex; justify-content: flex-end; width: 100%; margin-bottom: 10px; }
+.share-btn { 
+    background: var(--black); 
+    color: var(--orange); 
+    border: 2px solid var(--orange); 
+    border-radius: 6px; 
+    padding: 6px 12px; 
+    font-size: 0.75rem; 
+    font-weight: 800; 
+    cursor: pointer; 
+    transition: 0.3s ease; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    text-transform: uppercase;
+}
+.share-btn:hover { background: var(--orange); color: var(--black); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(255,140,0,0.3); }
+
 .budd-read-more { background: var(--orange); color: #000; border: 2px solid #000; padding: 8px 18px; border-radius: 4px; font-weight: 900; font-size: 0.7rem; cursor: pointer; margin-top: 10px; text-transform: uppercase; transition: 0.3s; }
 .budd-read-more:hover { background: #000; color: var(--orange); letter-spacing: 1px; }
 
 /* Text Expansion Classes */
 .text-container { max-height: 0; overflow: hidden; opacity: 0; transition: 0.6s ease; }
-.show-text { max-height: 4000px; opacity: 1; margin-top: 15px; }
-  
+.show-text { max-height: 5000px; opacity: 1; margin-top: 15px; }
