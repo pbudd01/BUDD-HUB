@@ -104,7 +104,6 @@ function updateTicker() {
 function renderFeed(stories) {
     const feed = document.getElementById('news-feed');
     feed.innerHTML = stories.length ? stories.map((s, i) => {
-        // PARAGRAPH SENSITIVITY LOGIC
         const formattedFullText = s.fullText.split('\n').filter(p => p.trim() !== '').map(p => `<p style="margin-bottom:15px;">${p}</p>`).join('');
         
         return `
@@ -117,14 +116,16 @@ function renderFeed(stories) {
                 <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:15px;">${s.summary}</p>
                 <div>${formattedFullText}</div>
             </div>
-            <button class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
+            <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
         </article><hr style="margin:25px 0; border:0; border-top:1px solid #eee;">`;
     }).join('') : "<p style='text-align:center;'>No stories found.</p>";
 }
 
 function handleAction(idx) {
     const box = document.getElementById(`text-container-${idx}`); 
-    box.classList.toggle('show-text');
+    const btn = document.getElementById(`read-btn-${idx}`);
+    const isActive = box.classList.toggle('show-text');
+    btn.textContent = isActive ? "HIDE STORY" : "READ STORY";
 }
 
 function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Denied."); }
