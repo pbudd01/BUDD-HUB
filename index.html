@@ -1,235 +1,137 @@
-const ADMIN_PASSWORD = "budd-hub-2025";
-let newsData = { local:[], tech:[], finance:[], international:[], sports:[], fashion:[], entertainment:[], trending:[], drafts:[], all:[] };
-let currentCategory = 'all';
-const categories = ['all', 'trending', 'local', 'tech', 'finance', 'international', 'sports', 'fashion', 'entertainment'];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBUDD-HUB | Premium News Portal</title>
+    <link rel="stylesheet" href="NewsWeb.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body data-theme="light">
 
-window.onload = () => {
-    initNavs();
-    loadSharedNews();
-    setupTheme();
-    setupContactForm();
-    setupAdminLogin();
-};
+    <div class="ticker-wrap">
+        <div class="ticker-label">BREAKING</div>
+        <div class="ticker-content" id="ticker-scroll"></div>
+    </div>
 
-function setupAdminLogin() {
-    const adminPassInput = document.getElementById('admin-pass');
-    if (adminPassInput) {
-        adminPassInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') verifyAdmin();
-        });
-    }
-}
+    <div id="side-menu" class="side-drawer">
+        <div class="drawer-header-main">
+            <h3 class="drawer-logo">PBUDD-HUB</h3>
+            <span class="close-drawer" onclick="toggleMenu()">&times;</span>
+        </div>
+        <hr class="drawer-divider">
+        <nav class="drawer-nav" id="drawer-nav-list"></nav>
+    </div>
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
-function initNavs() {
-    const horizontalNav = document.getElementById('horizontal-nav');
-    const drawerNav = document.getElementById('drawer-nav-list');
-    
-    horizontalNav.innerHTML = categories.map(cat => 
-        `<a href="#" class="nav-item ${cat === currentCategory ? 'active-page' : ''}" 
-            onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
-    ).join('');
-    
-    drawerNav.innerHTML = categories.map(cat => 
-        `<a href="#" class="drawer-item" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
-    ).join('') + `
-    <div class="theme-switch-wrapper">
-        <span class="theme-switch-label">Dark Mode</span>
-        <label class="theme-switch"><input type="checkbox" id="theme-checkbox"><span class="slider"></span></label>
-    </div>`;
-}
+    <header class="glass-header">
+        <div class="brand-section">
+            <button class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            <h1 class="main-logo">PBUDD-HUB</h1>
+            <div style="width: 30px;"></div> 
+        </div>
 
-function selectCategory(cat) {
-    currentCategory = cat;
-    initNavs();
-    handleSearch();
-    toggleMenu(false); 
-    window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function toggleMenu(state) { 
-    const sideMenu = document.getElementById('side-menu');
-    const overlay = document.getElementById('menu-overlay');
-    if (state === false || (state !== true && sideMenu.classList.contains('open'))) {
-        sideMenu.classList.remove('open');
-        overlay.classList.remove('active');
-    } else {
-        sideMenu.classList.add('open');
-        overlay.classList.add('active');
-    }
-}
-
-function handleSearch() {
-    const q = document.getElementById('main-search').value.toLowerCase();
-    const clearBtn = document.getElementById('clear-search');
-    if (clearBtn) clearBtn.style.display = q.length > 0 ? 'block' : 'none';
-
-    let filtered = (currentCategory === 'all') ? [...newsData.all] : [...newsData[currentCategory]];
-    if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
-    renderFeed(filtered);
-}
-
-function clearSearch() { document.getElementById('main-search').value = ''; handleSearch(); }
-
-async function loadSharedNews() {
-    const localData = localStorage.getItem('budd_news');
-    if (localData) newsData = JSON.parse(localData);
-
-    try {
-        const response = await fetch('BUDD-HUB-Backup.json?t=' + new Date().getTime());
-        if (response.ok) {
-            const shared = await response.json();
-            if (!localData) newsData = shared.news;
-            if(!newsData.drafts) newsData.drafts = [];
-        }
-    } catch (e) { console.warn("Sync failed, using offline data."); }
-    refreshData();
-}
-
-function refreshData() {
-    const cats = ['trending', 'local', 'tech', 'finance', 'international', 'sports', 'fashion', 'entertainment'];
-    let combined = [];
-    cats.forEach(c => { combined = combined.concat(newsData[c] || []); });
-    const unique = Array.from(new Set(combined.map(a => a.date))).map(date => combined.find(a => a.date === date));
-    newsData.all = unique.sort((a, b) => new Date(b.date) - new Date(a.date));
-    updateTicker();
-    handleSearch();
-}
-
-function updateTicker() {
-    const ticker = document.getElementById('ticker-scroll');
-    const latest = newsData.all.slice(0, 10);
-    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') + latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `<span class="ticker-item">PBUDD-HUB: Premium Hub</span>`;
-}
-
-function renderFeed(stories) {
-    const feed = document.getElementById('news-feed');
-    feed.innerHTML = stories.length ? stories.map((s, i) => {
-        const formattedFullText = s.fullText.split('\n').filter(p => p.trim() !== '').map(p => `<p style="margin-bottom:15px;">${p}</p>`).join('');
-        
-        return `
-        <article class="news-article">
-            <div class="article-meta"><span>${new Date(s.date).toLocaleDateString()}</span></div>
-            <div style="color:red; font-weight:bold; font-size:0.7rem; margin-bottom:5px;">PBUDD-HUB ${Array.isArray(s.category) ? s.category.join(' / ').toUpperCase() : s.category.toUpperCase()}</div>
-            <h2>${s.title}</h2>
-            <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
-            <div id="text-container-${i}" class="text-container">
-                <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:15px;">${s.summary}</p>
-                <div>${formattedFullText}</div>
+        <div class="action-bar">
+            <div class="search-layout-wrapper">
+                <div class="search-pill">
+                    <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
+                    <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+                    <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+                </div>
             </div>
-            <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
-        </article><hr style="margin:25px 0; border:0; border-top:1px solid #eee;">`;
-    }).join('') : "<p style='text-align:center;'>No stories found.</p>";
-}
+        </div>
 
-function handleAction(idx) {
-    const box = document.getElementById(`text-container-${idx}`); 
-    const btn = document.getElementById(`read-btn-${idx}`);
-    const isActive = box.classList.toggle('show-text');
-    btn.textContent = isActive ? "HIDE STORY" : "READ STORY";
-}
+        <nav class="category-bar-horizontal">
+            <div class="nav-scroll-container" id="horizontal-nav"></div>
+        </nav>
+    </header>
 
-function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Denied."); }
-function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
-function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; document.getElementById('login-section').style.display = 'block'; document.getElementById('admin-dashboard').style.display = 'none'; }
+    <main class="content-wrapper" id="news-feed"></main>
 
-function showTab(t) { 
-    ['create', 'manage', 'drafts-tab'].forEach(tab => { 
-        const el = document.getElementById(`tab-${tab}`);
-        if(el) el.style.display = (t === tab) ? 'block' : 'none'; 
-    }); 
-    if (t === 'manage') renderManageList(); 
-    if (t === 'drafts-tab') renderDraftsList();
-}
+    <div id="admin-panel" class="admin-overlay">
+        <div class="admin-content site-theme-dashboard">
+            <div class="admin-header-main">
+                <div class="admin-brand"><h2>PBUDD-HUB CMS</h2></div>
+                <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
+            </div>
+            
+            <div id="login-section">
+                <input type="password" id="admin-pass" placeholder="Security Key" class="site-input">
+                <button class="publish-action-btn" onclick="verifyAdmin()">Unlock Dashboard</button>
+            </div>
 
-function saveToLocal() { localStorage.setItem('budd_news', JSON.stringify(newsData)); }
+            <div id="admin-dashboard" style="display:none;">
+                <div class="admin-tabs">
+                    <button id="btn-tab-create" class="active" onclick="showTab('create')">Compose</button>
+                    <button id="btn-tab-drafts" onclick="showTab('drafts-tab')">Drafts</button>
+                    <button id="btn-tab-manage" onclick="showTab('manage')">Database</button>
+                </div>
 
-function submitPost() {
-    const selectedCats = Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value);
-    const editIdx = document.getElementById('edit-index').value;
-    if(selectedCats.length === 0) return alert("Select category!");
-    const post = { category: selectedCats, title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, date: editIdx !== "" ? newsData.all[editIdx].date : new Date().toISOString() };
-    if(editIdx !== "") { const old = newsData.all[editIdx]; categories.forEach(c => { if(newsData[c]) newsData[c] = newsData[c].filter(x => x.date !== old.date); }); }
-    selectedCats.forEach(cat => { if(!newsData[cat]) newsData[cat] = []; newsData[cat].unshift(post); });
-    saveToLocal(); refreshData(); closeAdminPanel();
-}
+                <div id="tab-create">
+                    <input type="hidden" id="edit-index" value="">
+                    <label class="cms-label">Hold CTRL to select multiple categories:</label>
+                    <select id="post-category" class="site-input" multiple style="height: 100px;">
+                        <option value="trending">Trending</option>
+                        <option value="local">Local</option>
+                        <option value="tech">Tech</option>
+                        <option value="finance">Finance</option>
+                        <option value="international">International</option>
+                        <option value="sports">Sports</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="entertainment">Entertainment</option>
+                    </select>
+                    <input type="text" id="post-title" class="site-input" placeholder="Headline">
+                    <input type="text" id="post-image" class="site-input" placeholder="Image URL">
+                    <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
+                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story..."></textarea>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="publish-action-btn" onclick="submitPost()">Publish Now</button>
+                        <button class="publish-action-btn" style="background: #555;" onclick="saveDraft()">Save Draft</button>
+                    </div>
+                </div>
 
-function saveDraft() {
-    const d = { title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, category: Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value), date: new Date().toISOString() };
-    if(!newsData.drafts) newsData.drafts = [];
-    newsData.drafts.unshift(d);
-    saveToLocal();
-    alert("Draft Saved Successfully.");
-    showTab('drafts-tab');
-}
+                <div id="tab-drafts-tab" style="display:none;">
+                    <div id="drafts-list" style="margin-top:15px;"></div>
+                </div>
 
-function renderDraftsList() {
-    const list = document.getElementById('drafts-list');
-    list.innerHTML = (newsData.drafts && newsData.drafts.length) ? newsData.drafts.map((d, i) => `
-        <div style="display:flex; padding:10px; border-bottom:1px solid #ddd; align-items:center; background:#f9f9f9; margin-bottom:5px; border-radius:5px; gap:10px;">
-            <span style="flex:1; font-size:0.75rem; font-weight:bold; color:#000;">${d.title || "(No Title)"}</span>
-            <button onclick="loadDraft(${i})" style="color:white; background:green; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:0.7rem;">LOAD</button>
-            <button onclick="deleteDraft(${i})" style="color:white; background:red; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:0.7rem;">DEL</button>
-        </div>`).join('') : "<p style='color:#000; text-align:center;'>No Drafts.</p>";
-}
+                <div id="tab-manage" style="display:none;">
+                    <button class="publish-action-btn" onclick="exportData()">Backup Database</button>
+                    <div id="manage-list" style="margin-top:15px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function loadDraft(i) {
-    const d = newsData.drafts[i];
-    document.getElementById('post-title').value = d.title;
-    document.getElementById('post-image').value = d.image;
-    document.getElementById('post-summary').value = d.summary;
-    document.getElementById('post-full').value = d.fullText;
-    const select = document.getElementById('post-category');
-    Array.from(select.options).forEach(opt => { opt.selected = d.category.includes(opt.value); });
-    showTab('create');
-}
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h2 class="footer-logo">PBUDD-HUB</h2>
+                <p>Verified premium journalism delivering high-impact news.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Editorial Enquiries</h4>
+                <form id="contact-form" class="premium-form">
+                    <input type="text" id="contact-subject" placeholder="Subject" required>
+                    <textarea id="contact-message" placeholder="Message..." required></textarea>
+                    <button type="submit">Submit Inquiry</button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h4>Official Contact</h4>
+                <a href="mailto:pbuddhub@gmail.com" class="footer-link">pbuddhub@gmail.com</a>
+                <p style="margin-top:20px;">&copy; 2025 PBUDD-HUB Network.</p>
+            </div>
+        </div>
+    </footer>
 
-function deleteDraft(i) { newsData.drafts.splice(i, 1); saveToLocal(); renderDraftsList(); }
+    <button id="admin-trigger" onclick="openAdminPanel()"><i class="fas fa-cog"></i></button>
 
-function renderManageList() {
-    document.getElementById('manage-list').innerHTML = newsData.all.length ? newsData.all.map((s, i) => `
-        <div style="display:flex; padding:10px; border-bottom:1px solid #ddd; align-items:center; background:#f9f9f9; margin-bottom:5px; border-radius:5px; gap:10px;">
-            <span style="flex:1; font-size:0.75rem; font-weight:bold; color:#000;">${s.title.slice(0,35)}...</span>
-            <button onclick="editPost(${i})" style="color:white; background:blue; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:0.7rem;">EDIT</button>
-            <button onclick="deletePost(${i})" style="color:white; background:red; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:0.7rem;">DEL</button>
-        </div>`).join('') : "<p style='color:#000; text-align:center;'>Empty.</p>";
-}
-
-function editPost(allIdx) {
-    const s = newsData.all[allIdx];
-    document.getElementById('edit-index').value = allIdx;
-    document.getElementById('post-title').value = s.title;
-    document.getElementById('post-image').value = s.image;
-    document.getElementById('post-summary').value = s.summary;
-    document.getElementById('post-full').value = s.fullText;
-    const select = document.getElementById('post-category');
-    Array.from(select.options).forEach(opt => { opt.selected = s.category.includes(opt.value); });
-    showTab('create');
-}
-
-function deletePost(i) { if (confirm("Delete story?")) { const s = newsData.all[i]; categories.forEach(c => { if(newsData[c]) newsData[c] = newsData[c].filter(x => x.date !== s.date); }); saveToLocal(); refreshData(); renderManageList(); } }
-
-function exportData() { const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); document.body.removeChild(l); }
-
-function setupContactForm() { 
-    const form = document.getElementById('contact-form'); 
-    if(form) { 
-        form.onsubmit = (e) => { 
-            e.preventDefault(); 
-            window.location.href = `mailto:pbuddhub@gmail.com?subject=${document.getElementById('contact-subject').value}&body=${document.getElementById('contact-message').value}`; 
-        }; 
-    } 
-}
-
-function setupTheme() { 
-    const saved = localStorage.getItem('budd_theme') || 'light'; 
-    const checkbox = document.getElementById('theme-checkbox'); 
-    document.body.setAttribute('data-theme', saved); 
-    if(checkbox) { 
-        checkbox.checked = (saved === 'dark'); 
-        checkbox.addEventListener('change', () => { 
-            const next = checkbox.checked ? 'dark' : 'light'; 
-            document.body.setAttribute('data-theme', next); 
-            localStorage.setItem('budd_theme', next); 
-        }); 
-    } 
-}
+    <script src="NewsWeb.js"></script>
+</body>
+</html>
