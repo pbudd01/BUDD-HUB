@@ -15,12 +15,14 @@
     </div>
 
     <div id="side-menu" class="side-drawer">
-        <div class="drawer-header">
-            <h3>PBUDD-HUB</h3>
+        <div class="drawer-header-main">
+            <h3 class="drawer-logo">PBUDD-HUB</h3>
             <span class="close-drawer" onclick="toggleMenu()">&times;</span>
         </div>
+        <hr class="drawer-divider">
         <nav class="drawer-nav" id="drawer-nav-list"></nav>
     </div>
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
     <header class="glass-header">
         <div class="brand-section">
@@ -33,6 +35,7 @@
             <div class="search-layout-wrapper">
                 <div class="search-pill">
                     <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
+                    <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
                     <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
@@ -57,25 +60,36 @@
             </div>
             <div id="admin-dashboard" style="display:none;">
                 <div class="admin-tabs">
-                    <button id="btn-tab-create" class="active" onclick="showTab('create')">Compose</button>
-                    <button id="btn-tab-manage" onclick="showTab('manage')">Database</button>
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">Compose</button>
+                    <button id="btn-tab-drafts" class="tab-btn" onclick="showTab('drafts-tab')">Drafts</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">Database</button>
                 </div>
                 <div id="tab-create">
-                    <input type="hidden" id="edit-index">
-                    <select id="post-category" class="site-input">
-                        <option value="all">All</option><option value="local">Local</option><option value="tech">Tech</option>
-                        <option value="finance">Finance</option><option value="international">International</option>
-                        <option value="sports">Sports</option><option value="fashion">Fashion</option>
+                    <input type="hidden" id="edit-index" value="">
+                    <label class="cms-label">Hold CTRL to select multiple categories:</label>
+                    <select id="post-category" class="site-input" multiple>
+                        <option value="trending">Trending</option>
+                        <option value="local">Local</option>
+                        <option value="tech">Tech</option>
+                        <option value="finance">Finance</option>
+                        <option value="international">International</option>
+                        <option value="sports">Sports</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="entertainment">Entertainment</option>
                     </select>
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story (Use Enter for Paragraphs)"></textarea>
-                    <button class="publish-action-btn" onclick="submitPost()">Publish to Hub</button>
+                    <textarea id="post-full" class="site-input" placeholder="Full Story..."></textarea>
+                    <div class="admin-actions">
+                        <button class="action-btn-main" onclick="submitPost()">Publish</button>
+                        <button class="action-btn-sub" onclick="saveDraft()">Draft</button>
+                    </div>
                 </div>
+                <div id="tab-drafts-tab" style="display:none;"><div id="drafts-list" class="db-list"></div></div>
                 <div id="tab-manage" style="display:none;">
-                    <button class="publish-action-btn" onclick="exportData()">Backup Database</button>
-                    <div id="manage-list" style="margin-top:15px;"></div>
+                    <button class="backup-btn" onclick="exportData()">Backup JSON</button>
+                    <div id="manage-list" class="db-list"></div>
                 </div>
             </div>
         </div>
@@ -85,7 +99,7 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h2 class="footer-logo">PBUDD-HUB</h2>
-                <p>Verified premium journalism delivering high-impact news across tech, finance, and culture.</p>
+                <p>Verified premium journalism delivering high-impact news.</p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-x-twitter"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -108,7 +122,9 @@
         </div>
     </footer>
 
-    <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
+    <button id="admin-trigger" onclick="openAdminPanel()"><i class="fas fa-cog"></i></button>
+
     <script src="NewsWeb.js"></script>
 </body>
 </html>
+
