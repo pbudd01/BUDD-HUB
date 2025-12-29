@@ -56,17 +56,15 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .search-submit-btn { background: #000; color: var(--orange); border: none; width: 60px; height: 45px; cursor: pointer; transition: 0.3s; }
 .search-submit-btn:hover { background: var(--orange); color: #000; }
 
-/* --- REDONE ADMIN DASHBOARD --- */
+/* --- ADMIN DASHBOARD --- */
 .admin-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9000; overflow-y: auto; }
 .site-theme-dashboard { background: var(--white); width: 95%; max-width: 500px; margin: 5vh auto; padding: 30px; border-radius: 15px; border: 4px solid #000; position: relative; color: #000; }
 .close-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; font-weight: bold; color: #000; transition: 0.3s; }
 .close-btn:hover { color: var(--orange); transform: rotate(90deg); }
-
 .admin-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
 .admin-tabs button { flex: 1; padding: 10px; border: 2px solid #000; background: #eee; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.3s; }
 .admin-tabs button:hover { background: #ddd; }
 .admin-tabs button.active { background: var(--orange); }
-
 .site-input { width: 100%; background: #fff; border: 2px solid #000; padding: 12px; margin-bottom: 12px; border-radius: 8px; font-weight: 600; color: #000; font-size: 0.9rem; }
 .publish-action-btn { background: #000; color: var(--orange); border: 2px solid #000; padding: 12px; width: 100%; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
 .publish-action-btn:hover { transform: scale(1.02); background: var(--orange); color: #000; }
@@ -80,11 +78,18 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .footer-logo { font-size: 2rem; font-weight: 900; color: var(--orange); transition: 0.3s; cursor: pointer; margin-bottom: 15px; display: inline-block; }
 .footer-logo:hover { color: #fff; }
 .footer-section h4 { color: var(--orange); margin-bottom: 20px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; border-bottom: 1px solid #333; display: inline-block; }
+
+/* Orange Email Fix */
+.footer-link { color: var(--orange) !important; text-decoration: none; font-weight: bold; transition: 0.3s; }
+.footer-link:hover { color: #fff !important; text-decoration: underline; }
+
 .premium-form input, .premium-form textarea { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; margin-bottom: 10px; color: #fff; border-radius: 6px; }
 .premium-form button { background: var(--orange); border: none; padding: 12px; width: 100%; font-weight: 900; cursor: pointer; border-radius: 6px; transition: 0.3s; }
 .premium-form button:hover { background: #fff; color: var(--orange); transform: scale(1.02); }
+
+/* Social Icons Hover Effects */
 .social-icons i { font-size: 1.5rem; margin-right: 25px; color: #fff; transition: 0.3s; cursor: pointer; }
-.social-icons i:hover { color: var(--orange); transform: translateY(-5px); }
+.social-icons i:hover { color: var(--orange); transform: translateY(-8px); filter: drop-shadow(0 0 5px var(--orange)); }
 
 /* --- FEED & TEXT --- */
 .content-wrapper { padding: 30px 5%; max-width: 800px; margin: 0 auto; }
