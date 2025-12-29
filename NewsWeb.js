@@ -36,6 +36,9 @@ function initNavs() {
         <span class="theme-switch-label">Dark Mode</span>
         <label class="theme-switch"><input type="checkbox" id="theme-checkbox"><span class="slider"></span></label>
     </div>`;
+    
+    // Re-bind theme listener after injection
+    setTimeout(setupTheme, 100);
 }
 
 function selectCategory(cat) {
@@ -62,7 +65,6 @@ function handleSearch() {
     const q = document.getElementById('main-search').value.toLowerCase();
     const clearBtn = document.getElementById('clear-search');
     if (clearBtn) clearBtn.style.display = q.length > 0 ? 'block' : 'none';
-
     let filtered = (currentCategory === 'all') ? [...newsData.all] : [...newsData[currentCategory]];
     if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
     renderFeed(filtered);
@@ -79,8 +81,9 @@ async function loadSharedNews() {
             const shared = await response.json();
             if (!localData) newsData = shared.news;
         }
-    } catch (e) { console.warn("Local sync used."); }
+    } catch (e) { console.warn("Sync failed."); }
     refreshData();
+    checkDeepLink();
 }
 
 function refreshData() {
@@ -96,7 +99,7 @@ function refreshData() {
 function updateTicker() {
     const ticker = document.getElementById('ticker-scroll');
     const latest = newsData.all.slice(0, 10);
-    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `<span class="ticker-item">PBUDD-HUB: Premium Hub</span>`;
+    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') + latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `<span class="ticker-item">PBUDD-HUB Network: Premium Journalism</span>`;
 }
 
 function renderFeed(stories) {
@@ -116,11 +119,11 @@ function renderFeed(stories) {
             <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
             <div id="text-container-${i}" class="text-container">
                 <p class="summary-text">${s.summary}</p>
-                <div class="full-text-content">${s.fullText}</div>
+                <div class="full-story-content">${s.fullText}</div>
             </div>
             <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
         </article><hr class="article-divider">`;
-    }).join('') : "<p style='text-align:center;'>No stories found.</p>";
+    }).join('') : "<p style='text-align:center;'>Feed synced.</p>";
 }
 
 function handleAction(idx) {
@@ -131,30 +134,68 @@ function handleAction(idx) {
 }
 
 function shareStory(title, storyId) {
-    const url = window.location.origin + window.location.pathname + '?story=' + storyId;
+    const shareUrl = window.location.origin + window.location.pathname + '?story=' + storyId;
     if (navigator.share) {
-        navigator.share({ title: title, url: url });
+        navigator.share({ title: title, url: shareUrl });
     } else {
-        navigator.clipboard.writeText(url);
-        alert("Link copied!");
+        navigator.clipboard.writeText(shareUrl);
+        alert("Story link copied!");
+    }
+}
+
+function checkDeepLink() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('story');
+    if (storyId) {
+        setTimeout(() => {
+            const el = document.getElementById(storyId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                el.style.borderLeft = "4px solid orange";
+                el.style.paddingLeft = "10px";
+                setTimeout(() => { window.history.replaceState({}, document.title, window.location.origin + window.location.pathname); }, 2000);
+            }
+        }, 1000);
     }
 }
 
 function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Denied."); }
 function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; document.getElementById('login-section').style.display = 'block'; document.getElementById('admin-dashboard').style.display = 'none'; }
-function showTab(t) { ['create', 'manage', 'drafts-tab'].forEach(tab => { document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'; }); if (t === 'manage') renderManageList(); }
+function showTab(t) { ['create', 'manage', 'drafts-tab'].forEach(tab => { document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'; }); if (t === 'manage') renderManageList(); if (t === 'drafts-tab') renderDraftsList(); }
 function saveToLocal() { localStorage.setItem('budd_news', JSON.stringify(newsData)); }
 
 function submitPost() {
     const selectedCats = Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value);
-    const editIdx = document.getElementById('edit-index').value;
     if(selectedCats.length === 0) return alert("Select category!");
     const post = { category: selectedCats, title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, date: new Date().toISOString() };
     selectedCats.forEach(cat => { if(!newsData[cat]) newsData[cat] = []; newsData[cat].unshift(post); });
     saveToLocal(); refreshData(); closeAdminPanel();
 }
 
-function exportData() { const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `Backup.json`; l.click(); }
-function setupContactForm() { const form = document.getElementById('contact-form'); if(form) form.onsubmit = (e) => { e.preventDefault(); alert("Inquiry sent!"); }; }
-function setupTheme() { const saved = localStorage.getItem('budd_theme') || 'light'; document.body.setAttribute('data-theme', saved); }
+function saveDraft() {
+    const d = { title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, category: Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value), date: new Date().toISOString() };
+    if(!newsData.drafts) newsData.drafts = []; newsData.drafts.unshift(d); saveToLocal(); alert("Draft Saved."); showTab('drafts-tab');
+}
+
+function renderDraftsList() { const list = document.getElementById('drafts-list'); list.innerHTML = (newsData.drafts && newsData.drafts.length) ? newsData.drafts.map((d, i) => `<div class="list-item"><span class="list-title">${d.title || "(No Title)"}</span><div class="list-btns"><button onclick="loadDraft(${i})" class="btn-load">LOAD</button><button onclick="deleteDraft(${i})" class="btn-del">DEL</button></div></div>`).join('') : "<p style='color:#000; text-align:center;'>Empty.</p>"; }
+function loadDraft(i) { const d = newsData.drafts[i]; document.getElementById('post-title').value = d.title; document.getElementById('post-image').value = d.image; document.getElementById('post-summary').value = d.summary; document.getElementById('post-full').value = d.fullText; const select = document.getElementById('post-category'); Array.from(select.options).forEach(opt => { opt.selected = d.category.includes(opt.value); }); showTab('create'); }
+function deleteDraft(i) { newsData.drafts.splice(i, 1); saveToLocal(); renderDraftsList(); }
+function renderManageList() { document.getElementById('manage-list').innerHTML = newsData.all.length ? newsData.all.map((s, i) => `<div class="list-item"><span class="list-title">${s.title.slice(0,35)}...</span><div class="list-btns"><button onclick="deletePost(${i})" class="btn-del">DEL</button></div></div>`).join('') : "<p style='color:#000; text-align:center;'>Empty.</p>"; }
+function deletePost(i) { if (confirm("Delete?")) { const s = newsData.all[i]; categories.forEach(c => { if(newsData[c]) newsData[c] = newsData[c].filter(x => x.date !== s.date); }); saveToLocal(); refreshData(); renderManageList(); } }
+function exportData() { const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); }
+function setupContactForm() { const form = document.getElementById('contact-form'); if(form) { form.onsubmit = (e) => { e.preventDefault(); alert("Inquiry Sent!"); }; } }
+
+function setupTheme() { 
+    const saved = localStorage.getItem('budd_theme') || 'light'; 
+    const checkbox = document.getElementById('theme-checkbox'); 
+    document.body.setAttribute('data-theme', saved); 
+    if(checkbox) { 
+        checkbox.checked = (saved === 'dark'); 
+        checkbox.onclick = () => { 
+            const next = checkbox.checked ? 'dark' : 'light'; 
+            document.body.setAttribute('data-theme', next); 
+            localStorage.setItem('budd_theme', next); 
+        }; 
+    } 
+}
