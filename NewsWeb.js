@@ -62,7 +62,6 @@ function handleSearch() {
     const q = document.getElementById('main-search').value.toLowerCase();
     const clearBtn = document.getElementById('clear-search');
     if (clearBtn) clearBtn.style.display = q.length > 0 ? 'block' : 'none';
-
     let filtered = (currentCategory === 'all') ? [...newsData.all] : [...newsData[currentCategory]];
     if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
     renderFeed(filtered);
@@ -97,7 +96,7 @@ function refreshData() {
 function updateTicker() {
     const ticker = document.getElementById('ticker-scroll');
     const latest = newsData.all.slice(0, 10);
-    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `<span class="ticker-item">PBUDD-HUB: Premium Journalism</span>`;
+    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `<span class="ticker-item">PBUDD-HUB: Premium Hub</span>`;
 }
 
 function renderFeed(stories) {
@@ -106,37 +105,37 @@ function renderFeed(stories) {
         const storyId = encodeURIComponent(s.title.substring(0, 20)).replace(/%20/g, '-');
         return `
         <article class="news-article" id="${storyId}">
-            <div class="article-header-row">
+            <div class="article-meta-header">
                 <span class="article-date">${new Date(s.date).toLocaleDateString()}</span>
                 <button class="share-btn-themed" onclick="shareStory('${s.title.replace(/'/g, "\\'")}', '${storyId}')">
                     <i class="fas fa-share-alt"></i> SHARE
                 </button>
             </div>
-            <div class="article-category-tag">PBUDD-HUB ${Array.isArray(s.category) ? s.category.join(' / ').toUpperCase() : s.category.toUpperCase()}</div>
-            <h2 class="article-title">${s.title}</h2>
-            <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
-            <div id="text-container-${i}" class="expandable-text-container">
-                <p class="article-summary-text">${s.summary}</p>
-                <div class="article-full-body">${s.fullText}</div>
+            <div class="article-badge">PBUDD-HUB ${Array.isArray(s.category) ? s.category.join(' / ').toUpperCase() : s.category.toUpperCase()}</div>
+            <h2 class="centered-title">${s.title}</h2>
+            <img src="${s.image}" class="dynamic-img-centered" onerror="this.src='https://via.placeholder.com/400x200'">
+            <div id="text-container-${i}" class="story-content-container">
+                <p class="summary-highlight">${s.summary}</p>
+                <div class="full-story-body">${s.fullText}</div>
             </div>
             <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
-        </article><hr class="article-divider">`;
+        </article><hr class="article-spacer">`;
     }).join('') : "<p style='text-align:center;'>No stories found.</p>";
 }
 
 function handleAction(idx) {
     const box = document.getElementById(`text-container-${idx}`); 
     const btn = document.getElementById(`read-btn-${idx}`);
-    const active = box.classList.toggle('show-text'); 
+    const active = box.classList.toggle('show-text');
     btn.textContent = active ? "HIDE STORY" : "READ STORY";
 }
 
 function shareStory(title, storyId) {
-    const shareUrl = window.location.origin + window.location.pathname + '?story=' + storyId;
+    const url = window.location.origin + window.location.pathname + '?story=' + storyId;
     if (navigator.share) {
-        navigator.share({ title: title, url: shareUrl });
+        navigator.share({ title: title, url: url });
     } else {
-        navigator.clipboard.writeText(shareUrl);
+        navigator.clipboard.writeText(url);
         alert("Story link copied!");
     }
 }
@@ -147,12 +146,7 @@ function checkDeepLink() {
     if (storyId) {
         setTimeout(() => {
             const el = document.getElementById(storyId);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-                el.style.borderLeft = "4px solid orange";
-                el.style.paddingLeft = "10px";
-                setTimeout(() => { window.history.replaceState({}, document.title, window.location.origin + window.location.pathname); }, 2000);
-            }
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 1000);
     }
 }
@@ -173,19 +167,14 @@ function submitPost() {
 
 function saveDraft() {
     const d = { title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, category: Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value), date: new Date().toISOString() };
-    if(!newsData.drafts) newsData.drafts = []; newsData.drafts.unshift(d); saveToLocal(); alert("Saved to Drafts."); showTab('drafts-tab');
+    if(!newsData.drafts) newsData.drafts = []; newsData.drafts.unshift(d); saveToLocal(); alert("Draft Saved."); showTab('drafts-tab');
 }
 
 function renderDraftsList() { const list = document.getElementById('drafts-list'); list.innerHTML = (newsData.drafts && newsData.drafts.length) ? newsData.drafts.map((d, i) => `<div class="list-item"><span class="list-title">${d.title || "(No Title)"}</span><div class="list-btns"><button onclick="loadDraft(${i})" class="btn-load">LOAD</button><button onclick="deleteDraft(${i})" class="btn-del">DEL</button></div></div>`).join('') : "<p style='color:#000; text-align:center;'>Empty.</p>"; }
 function loadDraft(i) { const d = newsData.drafts[i]; document.getElementById('post-title').value = d.title; document.getElementById('post-image').value = d.image; document.getElementById('post-summary').value = d.summary; document.getElementById('post-full').value = d.fullText; const select = document.getElementById('post-category'); Array.from(select.options).forEach(opt => { opt.selected = d.category.includes(opt.value); }); showTab('create'); }
 function deleteDraft(i) { newsData.drafts.splice(i, 1); saveToLocal(); renderDraftsList(); }
 function renderManageList() { document.getElementById('manage-list').innerHTML = newsData.all.length ? newsData.all.map((s, i) => `<div class="list-item"><span class="list-title">${s.title.slice(0,35)}...</span><div class="list-btns"><button onclick="deletePost(${i})" class="btn-del">DEL</button></div></div>`).join('') : "<p style='color:#000; text-align:center;'>Empty.</p>"; }
-function deletePost(i) { if (confirm("Delete story?")) { const s = newsData.all[i]; categories.forEach(c => { if(newsData[c]) newsData[c] = newsData[c].filter(x => x.date !== s.date); }); saveToLocal(); refreshData(); renderManageList(); } }
+function deletePost(i) { if (confirm("Delete?")) { const s = newsData.all[i]; categories.forEach(c => { if(newsData[c]) newsData[c] = newsData[c].filter(x => x.date !== s.date); }); saveToLocal(); refreshData(); renderManageList(); } }
 function exportData() { const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; document.body.appendChild(l); l.click(); }
-function setupContactForm() { const form = document.getElementById('contact-form'); if(form) { form.onsubmit = (e) => { e.preventDefault(); window.location.href = `mailto:pbuddhub@gmail.com?subject=${document.getElementById('contact-subject').value}&body=${document.getElementById('contact-message').value}`; }; } }
-function setupTheme() { 
-    const saved = localStorage.getItem('budd_theme') || 'light'; 
-    const checkbox = document.getElementById('theme-checkbox'); 
-    document.body.setAttribute('data-theme', saved); 
-    if(checkbox) { checkbox.checked = (saved === 'dark'); 
-    checkbox.onclick = () => { const next = checkbox.checked ? 'dark' : 'light'; document.body.setAttribute('data-theme', next); localStorage.setItem('budd_theme', next); }; } }
+function setupContactForm() { const form = document.getElementById('contact-form'); if(form) { form.onsubmit = (e) => { e.preventDefault(); window.location.href = `mailto:pbuddhub@gmail.com`; }; } }
+function setupTheme() { const saved = localStorage.getItem('budd_theme') || 'light'; const checkbox = document.getElementById('theme-checkbox'); document.body.setAttribute('data-theme', saved); if(checkbox) { checkbox.checked = (saved === 'dark'); checkbox.addEventListener('change', () => { const next = checkbox.checked ? 'dark' : 'light'; document.body.setAttribute('data-theme', next); localStorage.setItem('budd_theme', next); }); } }
