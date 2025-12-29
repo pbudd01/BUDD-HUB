@@ -54,23 +54,20 @@
                 <div class="admin-brand"><h2>PBUDD-HUB CMS</h2></div>
                 <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
             </div>
-            
             <div id="login-section">
                 <input type="password" id="admin-pass" placeholder="Security Key" class="site-input">
-                <button class="publish-action-btn" onclick="verifyAdmin()">Unlock Dashboard</button>
+                <button class="publish-action-btn" onclick="verifyAdmin()">Unlock</button>
             </div>
-
             <div id="admin-dashboard" style="display:none;">
                 <div class="admin-tabs">
-                    <button id="btn-tab-create" class="active" onclick="showTab('create')">Compose</button>
-                    <button id="btn-tab-drafts" onclick="showTab('drafts-tab')">Drafts</button>
-                    <button id="btn-tab-manage" onclick="showTab('manage')">Database</button>
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">Compose</button>
+                    <button id="btn-tab-drafts" class="tab-btn" onclick="showTab('drafts-tab')">Drafts</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">Database</button>
                 </div>
-
                 <div id="tab-create">
                     <input type="hidden" id="edit-index" value="">
                     <label class="cms-label">Hold CTRL to select multiple categories:</label>
-                    <select id="post-category" class="site-input" multiple style="height: 100px;">
+                    <select id="post-category" class="site-input" multiple>
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
                         <option value="tech">Tech</option>
@@ -83,21 +80,16 @@
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story..."></textarea>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="publish-action-btn" onclick="submitPost()">Publish Now</button>
-                        <button class="publish-action-btn" style="background: #555;" onclick="saveDraft()">Save Draft</button>
+                    <textarea id="post-full" class="site-input" placeholder="Full Story..."></textarea>
+                    <div class="admin-actions">
+                        <button class="action-btn-main" onclick="submitPost()">Publish</button>
+                        <button class="action-btn-sub" onclick="saveDraft()">Draft</button>
                     </div>
                 </div>
-
-                <div id="tab-drafts-tab" style="display:none;">
-                    <div id="drafts-list" style="margin-top:15px;"></div>
-                </div>
-
+                <div id="tab-drafts-tab" style="display:none;"><div id="drafts-list" class="db-list"></div></div>
                 <div id="tab-manage" style="display:none;">
-                    <button class="publish-action-btn" onclick="exportData()">Backup Database</button>
-                    <div id="manage-list" style="margin-top:15px;"></div>
+                    <button class="backup-btn" onclick="exportData()">Backup JSON</button>
+                    <div id="manage-list" class="db-list"></div>
                 </div>
             </div>
         </div>
