@@ -34,7 +34,6 @@
         <div class="action-bar">
             <div class="search-pill">
                 <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
-                <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
                 <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
             </div>
         </div>
@@ -49,7 +48,7 @@
     <div id="admin-panel" class="admin-overlay">
         <div class="admin-content site-theme-dashboard">
             <div class="admin-header-main">
-                <div class="admin-brand"><h2>CMS PANEL</h2></div>
+                <div class="admin-brand"><h2>CMS HUB</h2></div>
                 <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
             </div>
             <div id="login-section">
@@ -59,14 +58,17 @@
             <div id="admin-dashboard" style="display:none;">
                 <div class="admin-tabs">
                     <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">New</button>
+                    <button id="btn-tab-drafts" class="tab-btn" onclick="showTab('drafts-tab')">Drafts</button>
                     <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">DB</button>
                 </div>
                 <div id="tab-create">
-                    <select id="post-category" class="site-input" multiple>
+                    <select id="post-category" class="site-input" multiple style="height:100px;">
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
+                        <option value="tech">Tech</option>
                     </select>
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
+                    <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
                     <textarea id="post-full" class="site-input" placeholder="Text"></textarea>
                     <button class="publish-action-btn" onclick="submitPost()">Publish</button>
@@ -81,16 +83,8 @@
 
     <footer class="site-footer">
         <div class="footer-grid">
-            <div class="footer-section">
-                <h2 class="footer-logo">PBUDD-HUB</h2>
-                <div class="social-icons">
-                    <i class="fab fa-facebook-f"></i><i class="fab fa-instagram"></i>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Official Contact</h4>
-                <a href="mailto:pbuddhub@gmail.com" style="color:var(--orange)">pbuddhub@gmail.com</a>
-            </div>
+            <div class="footer-section"><h2 class="footer-logo">PBUDD-HUB</h2></div>
+            <div class="footer-section"><h4>Official Contact</h4><a href="mailto:pbuddhub@gmail.com" style="color:var(--orange)">pbuddhub@gmail.com</a></div>
         </div>
     </footer>
 
