@@ -2,6 +2,17 @@
   "news": {
     "local": [
       {
+        "category": [
+          "trending",
+          "local"
+        ],
+        "title": "Nationwide Blackout: Nigeria's National Grid Collapses Again, Generation Plummets to Near Zero",
+        "image": "https://i.postimg.cc/3NY4gT9z/20251229-234350.jpg",
+        "summary": "Nigeria was plunged into darkness on Monday afternoon as the national electricity grid suffered a major system failure, causing power generation to crash from over 2,000MW to just 139MW within an hour.",
+        "fullText": "Millions of Nigerians faced a total power outage this Monday, December 29, 2025, following a significant collapse of the national electricity grid. According to real-time data from the Nigerian Independent System Operator (NISO), the country's power generation experienced a dramatic nosedive between 2:00 p.m. and 3:00 p.m., falling from 2,052.37 megawatts (MW) to a mere 139.92MW. At the peak of the collapse, only 50MW was being distributed nationwide, leaving the vast majority of the country's distribution companies (DisCos) with zero allocation.  \nThe impact was felt across all major regions, with nine out of the eleven DisCos—including Eko, Ikeja, Kano, and Port Harcourt—reporting absolute zero supply. Only Ibadan, Abuja, and Benin DisCos received fractional amounts of power during the crisis. This latest incident comes as a significant blow to the Federal Government's recent efforts to stabilize the energy sector, following the recent repair of the vandalized Lagos-Escravos gas pipeline which was expected to boost supply.  \nWhile the Transmission Company of Nigeria (TCN) and the Federal Ministry of Power have yet to release a detailed official report on the root cause, preliminary assessments point to a \"system disturbance\" likely triggered by the tripping of multiple generating units and critical 330kV transmission lines. This marks the second major grid failure in the latter half of 2025, reigniting concerns over the fragility of Nigeria's aging power infrastructure and its inability to handle sudden frequency fluctuations.  \nRestoration efforts began almost immediately, with Eko Electricity Distribution Company (EKEDC) and Abuja Electricity Distribution Company (AEDC) confirming that power is gradually being returned to their respective networks as the grid stabilizes. However, many households and businesses remain in the dark as technical teams work to synchronize the various power plants back onto the national system.  ",
+        "date": "2025-12-29T22:56:33.010Z"
+      },
+      {
         "category": "local",
         "title": "Tragedy on Lagos-Ibadan Expressway: Two Dead as Anthony Joshua Survives Ghastly Motor Accident",
         "image": "https://i.postimg.cc/h4y1hF3x/Anthony-Joshua-cae28f134d.jpg",
@@ -91,7 +102,7 @@
       }
     ],
     "fashion": [
-      {
+            {
         "category": "fashion",
         "title": "The Evolution of the 'Naked Dress': Why the Risqué Fashion Trend is Dominating 2025",
         "image": "https://i.postimg.cc/yxXSDFTC/Screenshot-2025-12-28-212913.png",
@@ -101,6 +112,17 @@
       }
     ],
     "all": [
+      {
+        "category": [
+          "trending",
+          "local"
+        ],
+        "title": "Nationwide Blackout: Nigeria's National Grid Collapses Again, Generation Plummets to Near Zero",
+        "image": "https://i.postimg.cc/3NY4gT9z/20251229-234350.jpg",
+        "summary": "Nigeria was plunged into darkness on Monday afternoon as the national electricity grid suffered a major system failure, causing power generation to crash from over 2,000MW to just 139MW within an hour.",
+        "fullText": "Millions of Nigerians faced a total power outage this Monday, December 29, 2025, following a significant collapse of the national electricity grid. According to real-time data from the Nigerian Independent System Operator (NISO), the country's power generation experienced a dramatic nosedive between 2:00 p.m. and 3:00 p.m., falling from 2,052.37 megawatts (MW) to a mere 139.92MW. At the peak of the collapse, only 50MW was being distributed nationwide, leaving the vast majority of the country's distribution companies (DisCos) with zero allocation.  \nThe impact was felt across all major regions, with nine out of the eleven DisCos—including Eko, Ikeja, Kano, and Port Harcourt—reporting absolute zero supply. Only Ibadan, Abuja, and Benin DisCos received fractional amounts of power during the crisis. This latest incident comes as a significant blow to the Federal Government's recent efforts to stabilize the energy sector, following the recent repair of the vandalized Lagos-Escravos gas pipeline which was expected to boost supply.  \nWhile the Transmission Company of Nigeria (TCN) and the Federal Ministry of Power have yet to release a detailed official report on the root cause, preliminary assessments point to a \"system disturbance\" likely triggered by the tripping of multiple generating units and critical 330kV transmission lines. This marks the second major grid failure in the latter half of 2025, reigniting concerns over the fragility of Nigeria's aging power infrastructure and its inability to handle sudden frequency fluctuations.  \nRestoration efforts began almost immediately, with Eko Electricity Distribution Company (EKEDC) and Abuja Electricity Distribution Company (AEDC) confirming that power is gradually being returned to their respective networks as the grid stabilizes. However, many households and businesses remain in the dark as technical teams work to synchronize the various power plants back onto the national system.  ",
+        "date": "2025-12-29T22:56:33.010Z"
+      },
       {
         "category": [
           "trending",
@@ -215,6 +237,17 @@
       }
     ],
     "trending": [
+      {
+        "category": [
+          "trending",
+          "local"
+        ],
+        "title": "Nationwide Blackout: Nigeria's National Grid Collapses Again, Generation Plummets to Near Zero",
+        "image": "https://i.postimg.cc/3NY4gT9z/20251229-234350.jpg",
+        "summary": "Nigeria was plunged into darkness on Monday afternoon as the national electricity grid suffered a major system failure, causing power generation to crash from over 2,000MW to just 139MW within an hour.",
+        "fullText": "Millions of Nigerians faced a total power outage this Monday, December 29, 2025, following a significant collapse of the national electricity grid. According to real-time data from the Nigerian Independent System Operator (NISO), the country's power generation experienced a dramatic nosedive between 2:00 p.m. and 3:00 p.m., falling from 2,052.37 megawatts (MW) to a mere 139.92MW. At the peak of the collapse, only 50MW was being distributed nationwide, leaving the vast majority of the country's distribution companies (DisCos) with zero allocation.  \nThe impact was felt across all major regions, with nine out of the eleven DisCos—including Eko, Ikeja, Kano, and Port Harcourt—reporting absolute zero supply. Only Ibadan, Abuja, and Benin DisCos received fractional amounts of power during the crisis. This latest incident comes as a significant blow to the Federal Government's recent efforts to stabilize the energy sector, following the recent repair of the vandalized Lagos-Escravos gas pipeline which was expected to boost supply.  \nWhile the Transmission Company of Nigeria (TCN) and the Federal Ministry of Power have yet to release a detailed official report on the root cause, preliminary assessments point to a \"system disturbance\" likely triggered by the tripping of multiple generating units and critical 330kV transmission lines. This marks the second major grid failure in the latter half of 2025, reigniting concerns over the fragility of Nigeria's aging power infrastructure and its inability to handle sudden frequency fluctuations.  \nRestoration efforts began almost immediately, with Eko Electricity Distribution Company (EKEDC) and Abuja Electricity Distribution Company (AEDC) confirming that power is gradually being returned to their respective networks as the grid stabilizes. However, many households and businesses remain in the dark as technical teams work to synchronize the various power plants back onto the national system.  ",
+        "date": "2025-12-29T22:56:33.010Z"
+      },
       {
         "category": [
           "trending",
