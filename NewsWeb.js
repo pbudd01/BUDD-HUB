@@ -83,6 +83,7 @@ async function loadSharedNews() {
         }
     } catch (e) { console.warn("Sync failed, using offline data."); }
     refreshData();
+    checkDeepLink(); // Checks if URL has a story link
 }
 
 function refreshData() {
@@ -104,12 +105,17 @@ function updateTicker() {
 function renderFeed(stories) {
     const feed = document.getElementById('news-feed');
     feed.innerHTML = stories.length ? stories.map((s, i) => {
-        // Formats line breaks into paragraphs
+        const storyId = encodeURIComponent(s.title.substring(0, 20)).replace(/%20/g, '-');
         const formattedFullText = s.fullText.split('\n').filter(p => p.trim() !== '').map(p => `<p style="margin-bottom:15px;">${p}</p>`).join('');
         
         return `
-        <article class="news-article">
-            <div class="article-meta"><span>${new Date(s.date).toLocaleDateString()}</span></div>
+        <article class="news-article" id="${storyId}">
+            <div class="article-meta">
+                <span>${new Date(s.date).toLocaleDateString()}</span>
+                <button class="share-btn" onclick="shareStory('${s.title.replace(/'/g, "\\'")}', '${storyId}')">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+            </div>
             <div style="color:red; font-weight:bold; font-size:0.7rem; margin-bottom:5px;">PBUDD-HUB ${Array.isArray(s.category) ? s.category.join(' / ').toUpperCase() : s.category.toUpperCase()}</div>
             <h2>${s.title}</h2>
             <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
@@ -127,6 +133,33 @@ function handleAction(idx) {
     const btn = document.getElementById(`read-btn-${idx}`);
     const isActive = box.classList.toggle('show-text');
     btn.textContent = isActive ? "HIDE STORY" : "READ STORY";
+}
+
+// SHARE LOGIC
+function shareStory(title, storyId) {
+    const shareUrl = window.location.origin + window.location.pathname + '?story=' + storyId;
+    if (navigator.share) {
+        navigator.share({ title: title, url: shareUrl });
+    } else {
+        navigator.clipboard.writeText(shareUrl);
+        alert("Story link copied to clipboard!");
+    }
+}
+
+// DEEP LINK LOGIC
+function checkDeepLink() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('story');
+    if (storyId) {
+        setTimeout(() => {
+            const el = document.getElementById(storyId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                el.style.borderLeft = "4px solid orange";
+                el.style.paddingLeft = "10px";
+            }
+        }, 1000);
+    }
 }
 
 function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Denied."); }
