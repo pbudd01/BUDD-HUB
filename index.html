@@ -32,9 +32,12 @@
         </div>
 
         <div class="action-bar">
-            <div class="search-pill">
-                <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
-                <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            <div class="search-layout-wrapper">
+                <div class="search-pill">
+                    <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
+                    <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+                    <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+                </div>
             </div>
         </div>
 
@@ -48,34 +51,45 @@
     <div id="admin-panel" class="admin-overlay">
         <div class="admin-content site-theme-dashboard">
             <div class="admin-header-main">
-                <div class="admin-brand"><h2>CMS HUB</h2></div>
+                <div class="admin-brand"><h2>PBUDD-HUB CMS</h2></div>
                 <span class="close-btn" onclick="closeAdminPanel()">&times;</span>
             </div>
             <div id="login-section">
-                <input type="password" id="admin-pass" placeholder="Key" class="site-input">
+                <input type="password" id="admin-pass" placeholder="Security Key" class="site-input">
                 <button class="publish-action-btn" onclick="verifyAdmin()">Unlock</button>
             </div>
             <div id="admin-dashboard" style="display:none;">
                 <div class="admin-tabs">
-                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">New</button>
+                    <button id="btn-tab-create" class="tab-btn active" onclick="showTab('create')">Compose</button>
                     <button id="btn-tab-drafts" class="tab-btn" onclick="showTab('drafts-tab')">Drafts</button>
-                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">DB</button>
+                    <button id="btn-tab-manage" class="tab-btn" onclick="showTab('manage')">Database</button>
                 </div>
                 <div id="tab-create">
-                    <select id="post-category" class="site-input" multiple style="height:100px;">
+                    <input type="hidden" id="edit-index" value="">
+                    <label class="cms-label">Categories (CTRL+Click):</label>
+                    <select id="post-category" class="site-input" multiple>
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
                         <option value="tech">Tech</option>
+                        <option value="finance">Finance</option>
+                        <option value="international">International</option>
+                        <option value="sports">Sports</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="entertainment">Entertainment</option>
                     </select>
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" placeholder="Text"></textarea>
-                    <button class="publish-action-btn" onclick="submitPost()">Publish</button>
+                    <textarea id="post-full" class="site-input" placeholder="Full Story..."></textarea>
+                    <div class="admin-actions">
+                        <button class="action-btn-main" onclick="submitPost()">Publish</button>
+                        <button class="action-btn-sub" onclick="saveDraft()">Draft</button>
+                    </div>
                 </div>
+                <div id="tab-drafts-tab" style="display:none;"><div id="drafts-list" class="db-list"></div></div>
                 <div id="tab-manage" style="display:none;">
-                    <button class="backup-btn" onclick="exportData()">Backup JSON</button>
-                    <div id="manage-list"></div>
+                    <button class="publish-action-btn" onclick="exportData()">Backup JSON</button>
+                    <div id="manage-list" class="db-list"></div>
                 </div>
             </div>
         </div>
@@ -83,12 +97,34 @@
 
     <footer class="site-footer">
         <div class="footer-grid">
-            <div class="footer-section"><h2 class="footer-logo">PBUDD-HUB</h2></div>
-            <div class="footer-section"><h4>Official Contact</h4><a href="mailto:pbuddhub@gmail.com" style="color:var(--orange)">pbuddhub@gmail.com</a></div>
+            <div class="footer-section">
+                <h2 class="footer-logo">PBUDD-HUB</h2>
+                <h4>About Us</h4>
+                <p>PBUDD-HUB is a premier digital news platform dedicated to providing verified, high-impact journalism. We bridge the gap between global trends and local stories with integrity and precision.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Editorial Enquiries</h4>
+                <form id="contact-form" class="premium-form">
+                    <input type="text" id="contact-subject" placeholder="Subject" required>
+                    <textarea id="contact-message" placeholder="Message..." required></textarea>
+                    <button type="submit">Submit Inquiry</button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h4>Official Contact</h4>
+                <a href="mailto:pbuddhub@gmail.com" class="footer-link">pbuddhub@gmail.com</a>
+                <p style="margin-top:20px;">&copy; 2025 PBUDD-HUB Network.</p>
+            </div>
         </div>
     </footer>
 
     <button id="admin-trigger" onclick="openAdminPanel()"><i class="fas fa-cog"></i></button>
+
     <script src="NewsWeb.js"></script>
 </body>
 </html>
