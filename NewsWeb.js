@@ -21,7 +21,14 @@ function initNavs() {
     
     const drawerHTML = categories.map(cat => 
         `<a href="#" class="drawer-item" data-category="${cat}" onclick="selectCategory('${cat}')">${cat.toUpperCase()}</a>`
-    ).join('') + `<hr style="margin:15px 0; border:0; border-top:1px solid rgba(0,0,0,0.1);"><button id="theme-toggle" class="drawer-theme-btn">🌙 Dark Mode</button>`;
+    ).join('') + `
+    <div class="theme-switch-wrapper">
+        <span class="theme-switch-label">Dark Mode</span>
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-checkbox">
+            <span class="slider"></span>
+        </label>
+    </div>`;
     
     if(horizontalNav) horizontalNav.innerHTML = navHTML;
     if(drawerNav) drawerNav.innerHTML = drawerHTML;
@@ -144,6 +151,7 @@ function closeAdminPanel() {
     document.getElementById('admin-panel').style.display = 'none'; 
     document.getElementById('login-section').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
+    document.getElementById('admin-pass').value = '';
 }
 function showTab(t) {
     ['create', 'manage'].forEach(tab => document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none');
@@ -164,21 +172,26 @@ function submitPost() {
     refreshData(); closeAdminPanel();
 }
 function renderManageList() {
-    document.getElementById('manage-list').innerHTML = newsData.all.map((s, i) => `
+    document.getElementById('manage-list').innerHTML = newsData.all.length ? newsData.all.map((s, i) => `
         <div style="display:flex; padding:10px; border-bottom:1px solid #ddd; align-items:center; background:#f9f9f9; margin-bottom:5px; border-radius:5px;">
             <span style="flex:1; font-size:0.8rem; font-weight:bold; color:#000;">${s.title.slice(0,35)}...</span>
             <button onclick="deletePost(${i})" style="color:white; background:red; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">DEL</button>
-        </div>`).join('');
+        </div>`).join('') : "<p style='color:#000; text-align:center;'>No stories in database.</p>";
 }
 function deletePost(i) {
-    const s = newsData.all[i];
-    newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date);
-    localStorage.setItem('budd_news', JSON.stringify(newsData));
-    refreshData(); renderManageList();
+    if (confirm("Permanently delete this story?")) {
+        const s = newsData.all[i];
+        newsData[s.category] = newsData[s.category].filter(x => x.date !== s.date);
+        localStorage.setItem('budd_news', JSON.stringify(newsData));
+        refreshData(); renderManageList();
+    }
 }
 function exportData() {
-    const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" });
-    const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; l.click();
+    try {
+        const b = new Blob([JSON.stringify({ news: newsData }, null, 2)], { type: "application/json" });
+        const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`;
+        document.body.appendChild(l); l.click(); document.body.removeChild(l);
+    } catch (err) { alert("Export failed: " + err.message); }
 }
 function setupContactForm() {
     const form = document.getElementById('contact-form');
@@ -188,12 +201,15 @@ function setupContactForm() {
     };
 }
 function setupTheme() {
-    const btn = document.getElementById('theme-toggle');
     const saved = localStorage.getItem('budd_theme') || 'light';
+    const checkbox = document.getElementById('theme-checkbox');
     document.body.setAttribute('data-theme', saved);
-    if(btn) btn.onclick = () => {
-        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', next);
-        localStorage.setItem('budd_theme', next);
-    };
+    if(checkbox) {
+        checkbox.checked = (saved === 'dark');
+        checkbox.addEventListener('change', () => {
+            const next = checkbox.checked ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('budd_theme', next);
+        });
+    }
 }
