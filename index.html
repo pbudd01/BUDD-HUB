@@ -63,21 +63,19 @@
                 <div id="tab-create">
                     <input type="hidden" id="edit-index">
                     <select id="post-category" class="site-input">
-                        <option value="local">Local</option><option value="tech">Tech</option>
+                        <option value="all">All</option><option value="local">Local</option><option value="tech">Tech</option>
                         <option value="finance">Finance</option><option value="international">International</option>
                         <option value="sports">Sports</option><option value="fashion">Fashion</option>
                     </select>
                     <input type="text" id="post-title" class="site-input" placeholder="Headline">
                     <input type="text" id="post-image" class="site-input" placeholder="Image URL">
                     <textarea id="post-summary" class="site-input" placeholder="Summary"></textarea>
-                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story"></textarea>
+                    <textarea id="post-full" class="site-input" style="height:120px;" placeholder="Full Story (Use Enter for Paragraphs)"></textarea>
                     <button class="publish-action-btn" onclick="submitPost()">Publish to Hub</button>
                 </div>
                 <div id="tab-manage" style="display:none;">
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <button class="publish-action-btn" onclick="exportData()">Backup</button>
-                    </div>
-                    <div id="manage-list"></div>
+                    <button class="publish-action-btn" onclick="exportData()">Backup Database</button>
+                    <div id="manage-list" style="margin-top:15px;"></div>
                 </div>
             </div>
         </div>
@@ -104,14 +102,13 @@
             </div>
             <div class="footer-section">
                 <h4>Official Contact</h4>
-                <a href="mailto:ebenezerewemoje@gmail.com" class="footer-link">ebenezerewemoje@gmail.com</a>
+                <a href="mailto:pbuddhub@gmail.com" class="footer-link">pbuddhub@gmail.com</a>
                 <p style="margin-top:20px;">&copy; 2025 PBUDD-HUB Network.</p>
             </div>
         </div>
     </footer>
 
     <button id="admin-trigger" onclick="openAdminPanel()">⚙️</button>
-
     <script src="NewsWeb.js"></script>
 </body>
 </html>
