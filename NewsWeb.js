@@ -1,6 +1,6 @@
 // SUPABASE CONFIG
 const SUPABASE_URL = "https://epmenhoqwopcpzajedjv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_B8U6mTZfKMH_x1ArGfHx4F0P93kKzW3M"; // Use full key from your dashboard
+const SUPABASE_KEY = "sb_publishable_B8U6mTZfKMH_x1ArGfHx4F0P93kKzW3M"; 
 
 const ADMIN_PASSWORD = "budd-hub-2025";
 let newsData = { all: [], drafts: [] };
@@ -10,10 +10,32 @@ const categories = ['all', 'trending', 'local', 'tech', 'finance', 'internationa
 window.onload = () => {
     initNavs();
     fetchStoriesFromCloud(); 
+    setupRealtimeListener(); // Activates instant updates
     setupTheme();
     setupContactForm();
     setupAdminLogin();
 };
+
+// --- REALTIME LISTENER ---
+function setupRealtimeListener() {
+    // Note: This uses a standard fetch trigger for simplicity in your current architecture
+    // It watches for any 'INSERT' (new story) event in the database
+    const fetchEventSource = new EventSource(`${SUPABASE_URL}/rest/v1/stories?apikey=${SUPABASE_KEY}`);
+    
+    // We re-fetch the data whenever a change is detected to keep everyone in sync
+    setInterval(async () => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/stories?select=date&order=date.desc&limit=1`, {
+            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+        });
+        const latest = await response.json();
+        if (latest.length > 0 && newsData.all.length > 0) {
+            if (latest[0].date !== newsData.all[0].date) {
+                console.log("New breaking news detected! Syncing...");
+                fetchStoriesFromCloud();
+            }
+        }
+    }, 10000); // Checks for new posts every 10 seconds
+}
 
 async function fetchStoriesFromCloud() {
     try {
@@ -24,7 +46,7 @@ async function fetchStoriesFromCloud() {
         handleSearch();
         updateTicker();
         checkDeepLink();
-    } catch (e) { console.error("Sync failed."); }
+    } catch (e) { console.error("Cloud sync failed."); }
 }
 
 function initNavs() {
@@ -98,7 +120,6 @@ function handleAction(idx) {
 async function submitPost() {
     const selectedCats = Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value);
     const post = { category: selectedCats, title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, date: new Date().toISOString() };
-    
     const response = await fetch(`${SUPABASE_URL}/rest/v1/stories`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
@@ -135,4 +156,6 @@ function openAdminPanel() { document.getElementById('admin-panel').style.display
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; document.getElementById('login-section').style.display = 'block'; document.getElementById('admin-dashboard').style.display = 'none'; }
 function showTab(t) { ['create', 'manage', 'drafts-tab'].forEach(tab => { document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'; }); }
 function setupTheme() { const saved = localStorage.getItem('budd_theme') || 'light'; document.body.setAttribute('data-theme', saved); const cb = document.getElementById('theme-checkbox'); if(cb) { cb.checked = (saved === 'dark'); cb.addEventListener('change', () => { const next = cb.checked ? 'dark' : 'light'; document.body.setAttribute('data-theme', next); localStorage.setItem('budd_theme', next); }); } }
-                
+function setupContactForm() { const form = document.getElementById('contact-form'); if(form) { form.onsubmit = (e) => { e.preventDefault(); window.location.href = `mailto:pbuddhub@gmail.com`; }; } }
+function exportData() { const b = new Blob([JSON.stringify({ news: newsData.all }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; l.click(); }
+    
