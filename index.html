@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PBUDD-HUB | Premium News Portal</title>
     <link rel="stylesheet" href="NewsWeb.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,12 +32,10 @@
         </div>
 
         <div class="action-bar">
-            <div class="search-layout-wrapper">
-                <div class="search-pill">
-                    <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
-                    <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
-                    <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
-                </div>
+            <div class="search-pill">
+                <input type="text" id="main-search" placeholder="Search news..." class="search-input" oninput="handleSearch()">
+                <button id="clear-search" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+                <button class="search-submit-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
             </div>
         </div>
 
@@ -66,7 +64,7 @@
                 </div>
                 <div id="tab-create">
                     <input type="hidden" id="edit-index" value="">
-                    <label class="cms-label">Hold CTRL to select multiple categories:</label>
+                    <label class="cms-label">Categories (CTRL+Click):</label>
                     <select id="post-category" class="site-input" multiple>
                         <option value="trending">Trending</option>
                         <option value="local">Local</option>
