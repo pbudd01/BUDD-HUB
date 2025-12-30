@@ -1,15 +1,28 @@
+// --- 1. FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyDsDP3apIe321yJdh27Jik8XaULg7reKOc",
+    authDomain: "newsweb-c3a8d.firebaseapp.com",
+    databaseURL: "https://newsweb-c3a8d-default-rtdb.firebaseio.com",
+    projectId: "newsweb-c3a8d",
+    storageBucket: "newsweb-c3a8d.firebasestorage.app",
+    messagingSenderId: "190990824286",
+    appId: "1:190990824286:web:9b02f27b53dc964c5095cf",
+    measurementId: "G-HQ9K9MV4QR"
+};
+
+// Initialize Firebase (Standard/Compatibility Mode)
+// This checks if Firebase is already running to prevent errors
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// --- 2. GLOBAL VARIABLES ---
 const ADMIN_PASSWORD = "budd-hub-2025";
+// 'drafts' will be loaded from local storage, others from Cloud
 let newsData = { local:[], tech:[], finance:[], international:[], sports:[], fashion:[], entertainment:[], trending:[], drafts:[], all:[] };
 let currentCategory = 'all';
 const categories = ['all', 'trending', 'local', 'tech', 'finance', 'international', 'sports', 'fashion', 'entertainment'];
-
-window.onload = () => {
-    initNavs();
-    loadSharedNews();
-    setupTheme();
-    setupContactForm();
-    setupAdminLogin();
-};
 
 function setupAdminLogin() {
     const adminPassInput = document.getElementById('admin-pass');
