@@ -1,6 +1,6 @@
 // SUPABASE CONFIG
 const SUPABASE_URL = "https://epmenhoqwopcpzajedjv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_B8U6mTZfKMH_x1ArGfHx4F0P93kKzW3M"; 
+const SUPABASE_KEY = "sb_publishable_B8U6mTZfKMH_x1ArGfHx4A_6N9N4ntz"; 
 
 const ADMIN_PASSWORD = "budd-hub-2025";
 let newsData = { all: [], drafts: [] };
