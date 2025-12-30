@@ -71,19 +71,41 @@ function handleSearch() {
 function clearSearch() { document.getElementById('main-search').value = ''; handleSearch(); }
 
 async function loadSharedNews() {
+    // 1. Load Local Data first for immediate display
     const localData = localStorage.getItem('budd_news');
-    if (localData) newsData = JSON.parse(localData);
+    if (localData) {
+        newsData = JSON.parse(localData);
+        refreshData(); // Show cached data immediately
+    }
 
+    // 2. Fetch Server Data (The Source of Truth)
     try {
+        // The '?t=' + time part successfully busts the browser cache
         const response = await fetch('BUDD-HUB-Backup.json?t=' + new Date().getTime());
+        
         if (response.ok) {
             const shared = await response.json();
-            if (!localData) newsData = shared.news;
-            if(!newsData.drafts) newsData.drafts = [];
+            
+            // 3. CRITICAL FIX: Preserve local drafts, but OVERWRITE news with server data
+            const currentDrafts = newsData.drafts || []; 
+            
+            // Update the global data with fresh server content
+            newsData = shared.news;
+            
+            // Restore the local drafts (since server doesn't store drafts)
+            newsData.drafts = currentDrafts;
+
+            // 4. Update localStorage with the new mixed data so next refresh is fresher
+            saveToLocal();
+            
+            // 5. Re-render the feed with the new data
+            refreshData(); 
         }
-    } catch (e) { console.warn("Sync failed, using offline data."); }
-    refreshData();
-    checkDeepLink(); // Checks if URL has a story link
+    } catch (e) { 
+        console.warn("Sync failed, keeping offline data."); 
+    }
+    
+    checkDeepLink(); 
 }
 
 function refreshData() {
