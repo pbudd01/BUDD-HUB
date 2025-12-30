@@ -1,41 +1,17 @@
-// SUPABASE CONFIG
-const SUPABASE_URL = "https://epmenhoqwopcpzajedjv.supabase.co";
+const SUPABASE_URL = "https://epmenhoqwopcpajedjv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_B8U6mTZfKMH_x1ArGfHx4A_6N9N4ntz"; 
 
 const ADMIN_PASSWORD = "budd-hub-2025";
-let newsData = { all: [], drafts: [] };
+let newsData = { all: [] };
 let currentCategory = 'all';
 const categories = ['all', 'trending', 'local', 'tech', 'finance', 'international', 'sports', 'fashion', 'entertainment'];
 
 window.onload = () => {
     initNavs();
     fetchStoriesFromCloud(); 
-    setupRealtimeListener(); // Activates instant updates
     setupTheme();
-    setupContactForm();
     setupAdminLogin();
 };
-
-// --- REALTIME LISTENER ---
-function setupRealtimeListener() {
-    // Note: This uses a standard fetch trigger for simplicity in your current architecture
-    // It watches for any 'INSERT' (new story) event in the database
-    const fetchEventSource = new EventSource(`${SUPABASE_URL}/rest/v1/stories?apikey=${SUPABASE_KEY}`);
-    
-    // We re-fetch the data whenever a change is detected to keep everyone in sync
-    setInterval(async () => {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/stories?select=date&order=date.desc&limit=1`, {
-            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-        });
-        const latest = await response.json();
-        if (latest.length > 0 && newsData.all.length > 0) {
-            if (latest[0].date !== newsData.all[0].date) {
-                console.log("New breaking news detected! Syncing...");
-                fetchStoriesFromCloud();
-            }
-        }
-    }, 10000); // Checks for new posts every 10 seconds
-}
 
 async function fetchStoriesFromCloud() {
     try {
@@ -45,7 +21,6 @@ async function fetchStoriesFromCloud() {
         newsData.all = await response.json();
         handleSearch();
         updateTicker();
-        checkDeepLink();
     } catch (e) { console.error("Cloud sync failed."); }
 }
 
@@ -81,8 +56,14 @@ function handleSearch() {
     const q = document.getElementById('main-search').value.toLowerCase();
     const clearBtn = document.getElementById('clear-search');
     if (clearBtn) clearBtn.style.display = q.length > 0 ? 'block' : 'none';
-    let filtered = (currentCategory === 'all') ? [...newsData.all] : newsData.all.filter(s => s.category.includes(currentCategory));
-    if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
+    
+    let filtered = newsData.all;
+    if (currentCategory !== 'all') {
+        filtered = filtered.filter(s => s.category && s.category.includes(currentCategory));
+    }
+    if (q) {
+        filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q));
+    }
     renderFeed(filtered);
 }
 
@@ -103,11 +84,11 @@ function renderFeed(stories) {
             <img src="${s.image}" class="dynamic-img" onerror="this.src='https://via.placeholder.com/400x200'">
             <div id="text-container-${i}" class="text-container">
                 <p style="font-weight:700; border-left:4px solid orange; padding-left:12px; margin-bottom:15px;">${s.summary}</p>
-                <div>${s.fullText}</div>
+                <div style="white-space: pre-wrap;">${s.fullText}</div>
             </div>
             <button id="read-btn-${i}" class="budd-read-more" onclick="handleAction(${i})">READ STORY</button>
         </article><hr style="margin:25px 0; border:0; border-top:1px solid #eee;">`;
-    }).join('') : "<p style='text-align:center;'>Feed synced.</p>";
+    }).join('') : "<p style='text-align:center;'>No stories found.</p>";
 }
 
 function handleAction(idx) {
@@ -119,13 +100,21 @@ function handleAction(idx) {
 
 async function submitPost() {
     const selectedCats = Array.from(document.getElementById('post-category').selectedOptions).map(opt => opt.value);
-    const post = { category: selectedCats, title: document.getElementById('post-title').value, image: document.getElementById('post-image').value, summary: document.getElementById('post-summary').value, fullText: document.getElementById('post-full').value, date: new Date().toISOString() };
+    const post = { 
+        category: selectedCats, 
+        title: document.getElementById('post-title').value, 
+        image: document.getElementById('post-image').value, 
+        summary: document.getElementById('post-summary').value, 
+        fullText: document.getElementById('post-full').value, 
+        date: new Date().toISOString() 
+    };
+    
     const response = await fetch(`${SUPABASE_URL}/rest/v1/stories`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify(post)
     });
-    if(response.ok) { alert("Published Globally!"); fetchStoriesFromCloud(); closeAdminPanel(); }
+    if(response.ok) { alert("Published!"); fetchStoriesFromCloud(); closeAdminPanel(); }
 }
 
 function shareStory(title, storyId) {
@@ -134,28 +123,14 @@ function shareStory(title, storyId) {
     else { navigator.clipboard.writeText(url); alert("Link copied!"); }
 }
 
-function checkDeepLink() {
-    const storyId = new URLSearchParams(window.location.search).get('story');
-    if (storyId) {
-        setTimeout(() => {
-            const el = document.getElementById(storyId);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 1000);
-    }
-}
-
 function updateTicker() {
     const ticker = document.getElementById('ticker-scroll');
-    const latest = newsData.all.slice(0, 10);
-    ticker.innerHTML = latest.length ? latest.map(s => `<span class="ticker-item">● ${s.title}</span>`).join('') : `PBUDD-HUB Premium Hub`;
+    ticker.innerHTML = newsData.all.slice(0, 10).map(s => `<span class="ticker-item">● ${s.title}</span>`).join('');
 }
 
 function setupAdminLogin() { document.getElementById('admin-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyAdmin(); }); }
 function verifyAdmin() { if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) { document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'block'; } else alert("Denied."); }
 function openAdminPanel() { document.getElementById('admin-panel').style.display = 'block'; }
 function closeAdminPanel() { document.getElementById('admin-panel').style.display = 'none'; document.getElementById('login-section').style.display = 'block'; document.getElementById('admin-dashboard').style.display = 'none'; }
-function showTab(t) { ['create', 'manage', 'drafts-tab'].forEach(tab => { document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'; }); }
+function showTab(t) { ['create', 'manage'].forEach(tab => { document.getElementById(`tab-${tab}`).style.display = (t === tab) ? 'block' : 'none'; }); }
 function setupTheme() { const saved = localStorage.getItem('budd_theme') || 'light'; document.body.setAttribute('data-theme', saved); const cb = document.getElementById('theme-checkbox'); if(cb) { cb.checked = (saved === 'dark'); cb.addEventListener('change', () => { const next = cb.checked ? 'dark' : 'light'; document.body.setAttribute('data-theme', next); localStorage.setItem('budd_theme', next); }); } }
-function setupContactForm() { const form = document.getElementById('contact-form'); if(form) { form.onsubmit = (e) => { e.preventDefault(); window.location.href = `mailto:pbuddhub@gmail.com`; }; } }
-function exportData() { const b = new Blob([JSON.stringify({ news: newsData.all }, null, 2)], { type: "application/json" }); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = `BUDD-HUB-Backup.json`; l.click(); }
-    
